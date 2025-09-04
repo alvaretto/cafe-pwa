@@ -30,6 +30,7 @@ model User {
   expenses          Expense[]
   notifications     Notification[]
   auditLogs         AuditLog[]
+  deploymentLogs    DeploymentLog[]
   
   @@map("users")
 }
@@ -405,4 +406,49 @@ enum ReportFrequency {
   MONTHLY
   QUARTERLY
   YEARLY
+}
+
+// Modelo de Deployment Logs para auditoría
+model DeploymentLog {
+  id                String            @id @default(cuid())
+  userId            String
+  status            DeploymentStatus
+  platform          HostingPlatform
+  configId          String?
+  startedAt         DateTime          @default(now())
+  completedAt       DateTime?
+  duration          Int?              // Duración en milisegundos
+  commitHash        String?
+  branch            String            @default("main")
+  deploymentUrl     String?
+  buildId           String?
+  logs              String            @db.Text // JSON array de logs
+  validations       String            @db.Text // JSON array de validaciones
+  steps             String            @db.Text // JSON array de steps
+  error             String?           @db.Text // JSON del error si existe
+  metadata          String            @db.Text // JSON con metadata adicional
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relaciones
+  user              User              @relation(fields: [userId], references: [id])
+
+  @@map("deployment_logs")
+}
+
+enum DeploymentStatus {
+  IDLE
+  VALIDATING
+  BUILDING
+  TESTING
+  DEPLOYING
+  SUCCESS
+  ERROR
+  CANCELLED
+}
+
+enum HostingPlatform {
+  VERCEL
+  NETLIFY
+  MANUAL
 }

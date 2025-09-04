@@ -4,24 +4,26 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { 
-  BarChart3, 
-  Bell, 
-  AlertTriangle, 
-  Package, 
-  ShoppingCart, 
-  Users, 
-  Coffee, 
-  DollarSign, 
-  Plus, 
-  Settings, 
-  Brain, 
-  RefreshCw, 
+import {
+  BarChart3,
+  Bell,
+  AlertTriangle,
+  Package,
+  ShoppingCart,
+  Users,
+  Coffee,
+  DollarSign,
+  Plus,
+  Settings,
+  Brain,
+  RefreshCw,
   Lightbulb,
   TrendingUp,
   X,
-  Info
+  Info,
+  Rocket
 } from 'lucide-react'
+import { DeploymentPanelCompact } from './deployment-panel'
 
 // Gráfico de ventas simplificado
 export function SalesChartSimple({ isLoading }: { isLoading: boolean }) {
@@ -280,7 +282,9 @@ export function AIInsightsSimple({ isLoading }: { isLoading: boolean }) {
 }
 
 // Acciones rápidas
-export function QuickActionsSimple() {
+export function QuickActionsSimple({ user }: { user?: any }) {
+  const isAdmin = user?.role === 'ADMIN'
+
   const actions = [
     { id: 'new-sale', title: 'Nueva Venta', icon: ShoppingCart, color: 'text-green-600', bgColor: 'bg-green-100' },
     { id: 'add-customer', title: 'Nuevo Cliente', icon: Users, color: 'text-blue-600', bgColor: 'bg-blue-100' },
@@ -316,6 +320,11 @@ export function QuickActionsSimple() {
               </Button>
             )
           })}
+
+          {/* Panel de Deployment - Solo para ADMIN */}
+          {isAdmin && (
+            <DeploymentPanelCompact />
+          )}
         </div>
       </CardContent>
     </Card>

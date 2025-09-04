@@ -2,20 +2,28 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { 
-  Plus, 
-  ShoppingCart, 
-  Users, 
-  Package, 
-  FileText, 
+import {
+  Plus,
+  ShoppingCart,
+  Users,
+  Package,
+  FileText,
   Settings,
   Coffee,
-  DollarSign
+  DollarSign,
+  Rocket
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { DeploymentPanelCompact } from './deployment-panel'
+import { User } from '@/types'
 
-export function QuickActions() {
+interface QuickActionsProps {
+  user?: User
+}
+
+export function QuickActions({ user }: QuickActionsProps) {
   const router = useRouter()
+  const isAdmin = user?.role === 'ADMIN'
 
   const actions = [
     {
@@ -90,7 +98,7 @@ export function QuickActions() {
         <div className="grid grid-cols-2 gap-3">
           {actions.map((action) => {
             const Icon = action.icon
-            
+
             return (
               <Button
                 key={action.id}
@@ -112,6 +120,11 @@ export function QuickActions() {
               </Button>
             )
           })}
+
+          {/* Panel de Deployment - Solo para ADMIN */}
+          {isAdmin && (
+            <DeploymentPanelCompact />
+          )}
         </div>
         
         <div className="mt-4 pt-4 border-t">

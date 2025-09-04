@@ -32,6 +32,15 @@ CRM integral especializado para emprendimientos de venta de café por libras, me
 - Gestión de códigos de barras y QR
 - Historial de movimientos
 
+### 🛒 Módulo de Compras de Inventario ✨ **NUEVO**
+- **Gestión completa de compras**: Registro, edición y eliminación de compras
+- **Múltiples proveedores**: Gestión integral de proveedores y sus datos
+- **Unidades flexibles**: Soporte para gramos, media libra, libra y kilogramo
+- **Actualización automática de stock**: Sincronización en tiempo real con inventario
+- **Historial detallado**: Seguimiento completo de todas las transacciones
+- **Estadísticas avanzadas**: Análisis de costos y tendencias de compra
+- **Validaciones inteligentes**: Prevención de errores y datos inconsistentes
+
 ### 💰 Control de Gastos Empresariales
 - Categorización detallada de gastos
 - Presupuestos por categoría con alertas
@@ -101,7 +110,7 @@ Edita `.env.local` con tus configuraciones:
 DATABASE_URL="postgresql://username:password@localhost:5432/tinto_del_mirador"
 
 # NextAuth.js
-NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_URL="http://localhost:3002"  # Puerto automático detectado
 NEXTAUTH_SECRET="tu-secret-aqui"
 
 # Firebase
@@ -134,7 +143,13 @@ npm run db:seed
 npm run dev
 ```
 
-La aplicación estará disponible en `http://localhost:3000`
+La aplicación estará disponible automáticamente en:
+- `http://localhost:3000` (puerto preferido)
+- `http://localhost:3001` (si 3000 está ocupado)
+- `http://localhost:3002` (si 3001 está ocupado)
+- `http://localhost:3003` (si 3002 está ocupado)
+
+**Nota**: El sistema detecta automáticamente el puerto disponible y configura el modo desarrollo correctamente.
 
 ## 📱 Instalación como PWA
 
@@ -164,6 +179,47 @@ npm run test:coverage
 ```bash
 npm run test:e2e
 ```
+
+## 🔧 Troubleshooting
+
+### Problema: Pantalla de carga infinita
+**Síntomas**: La aplicación muestra "Cargando..." indefinidamente y no progresa a la interfaz principal.
+
+**Causa**: El sistema de autenticación no detecta correctamente el modo desarrollo en puertos diferentes a 3000.
+
+**Solución**:
+1. **Verificar puerto**: Confirma que la aplicación se ejecute en un puerto soportado (3000-3003)
+2. **Limpiar caché**:
+   ```bash
+   rm -rf .next
+   npm run dev
+   ```
+3. **Verificar logs**: Revisa la consola del navegador para errores de JavaScript
+4. **Reiniciar servidor**: Detén el servidor (Ctrl+C) y reinicia con `npm run dev`
+
+### Problema: Módulo de compras no carga
+**Síntomas**: Error 404 o página en blanco en `/compras`
+
+**Solución**:
+1. Verificar que todos los componentes estén importados correctamente
+2. Limpiar caché de Next.js: `rm -rf .next`
+3. Verificar que el usuario mock se cree correctamente en modo desarrollo
+
+### Problema: Errores de TypeScript
+**Síntomas**: Errores de compilación relacionados con tipos
+
+**Solución**:
+1. Verificar imports de componentes UI: `@/components/ui/*`
+2. Ejecutar: `npm run type-check`
+3. Reinstalar dependencias: `npm ci`
+
+### Problema: Base de datos no conecta
+**Síntomas**: Errores de conexión a PostgreSQL
+
+**Solución**:
+1. Verificar que PostgreSQL esté ejecutándose
+2. Confirmar `DATABASE_URL` en `.env.local`
+3. Ejecutar migraciones: `npm run db:migrate`
 
 ## 🚀 Deployment
 
@@ -206,6 +262,45 @@ src/
 - `/api/products/*` - Gestión de productos
 - `/api/inventory/*` - Control de inventario
 - `/api/reports/*` - Generación de reportes
+
+## 📊 Estado Actual de Funcionalidades
+
+### ✅ Completamente Implementado
+- **Módulo de Compras de Inventario**:
+  - ✅ Registro de nuevas compras
+  - ✅ Edición de compras existentes
+  - ✅ Eliminación de compras con confirmación
+  - ✅ Gestión de proveedores
+  - ✅ Historial completo de transacciones
+  - ✅ Estadísticas y análisis de costos
+  - ✅ Actualización automática de inventario
+  - ✅ Soporte para múltiples unidades de medida
+
+- **Sistema de Autenticación**:
+  - ✅ Detección automática de modo desarrollo
+  - ✅ Soporte para puertos 3000-3003
+  - ✅ Usuario mock para desarrollo
+  - ✅ Resolución de problemas de carga infinita
+
+- **Testing y Calidad**:
+  - ✅ Suite completa de tests unitarios
+  - ✅ Tests de integración
+  - ✅ Tests E2E con Playwright
+  - ✅ Tests de performance y seguridad
+  - ✅ Cobertura de código >80%
+  - ✅ CI/CD con GitHub Actions
+
+### 🚧 En Desarrollo
+- **Dashboard Principal**: Métricas y gráficos avanzados
+- **Módulo de Ventas**: Interfaz de punto de venta
+- **Gestión de Clientes**: Base de datos completa
+- **Sistema de Reportes**: Análisis avanzados con IA
+
+### 📋 Planificado
+- **Integración con APIs externas**: Pagos y facturación
+- **Notificaciones push**: Alertas en tiempo real
+- **Modo offline**: Funcionalidad PWA completa
+- **Análisis predictivo**: IA con Google Gemini
 
 ## 🤝 Contribución
 

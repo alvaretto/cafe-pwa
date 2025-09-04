@@ -11,14 +11,16 @@ import {
   getInventoryMovements
 } from '@/lib/mock-data'
 import { DashboardHeaderSimple } from '@/components/dashboard/dashboard-header-simple'
-import { 
-  PurchasesHeader, 
-  PurchasesStats, 
+import {
+  PurchasesHeader,
+  PurchasesStats,
   PurchasesTabs,
   PurchasesOverview,
   NewPurchaseForm,
   PurchasesHistory,
-  SuppliersManagement
+  SuppliersManagement,
+  EditPurchaseModal,
+  DeletePurchaseModal
 } from './purchases-components'
 
 interface PurchasesContentProps {
@@ -31,6 +33,9 @@ export function PurchasesContent({ user }: PurchasesContentProps) {
   const [purchases, setPurchases] = useState<InventoryMovement[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'overview' | 'new' | 'history' | 'suppliers'>('overview')
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [selectedPurchase, setSelectedPurchase] = useState<InventoryMovement | null>(null)
 
   useEffect(() => {
     loadPurchasesData()
@@ -122,6 +127,95 @@ export function PurchasesContent({ user }: PurchasesContentProps) {
     }
   }
 
+  // Función para manejar la edición de compras
+  const handleEditPurchase = (purchase: InventoryMovement) => {
+    setSelectedPurchase(purchase)
+    setEditModalOpen(true)
+  }
+
+  // Función para manejar la eliminación de compras
+  const handleDeletePurchase = (purchase: InventoryMovement) => {
+    setSelectedPurchase(purchase)
+    setDeleteModalOpen(true)
+  }
+
+  // Función para guardar los cambios de edición
+  const handleSaveEdit = async (purchaseData: {
+    id: string
+    quantity: number
+    unitType: 'gramos' | 'media_libra' | 'libra' | 'kilogramo'
+    unitCost: number
+    supplierId: string
+    notes?: string
+  }) => {
+    if (!selectedPurchase) return
+
+    const quantityInGrams = convertToGrams(purchaseData.quantity, purchaseData.unitType)
+    const totalCost = purchaseData.quantity * purchaseData.unitCost
+    const supplier = suppliers.find(s => s.id === purchaseData.supplierId)
+    const product = products.find(p => p.id === selectedPurchase.productId)
+
+    // Calcular la diferencia de stock
+    const oldQuantityInGrams = selectedPurchase.quantity
+    const stockDifference = quantityInGrams - oldQuantityInGrams
+
+    // Crear el reason actualizado
+    const unitName = {
+      'gramos': 'gramos',
+      'media_libra': 'media_libra',
+      'libra': 'libra',
+      'kilogramo': 'kilogramo'
+    }[purchaseData.unitType]
+
+    const reason = `Compra: ${purchaseData.quantity} ${unitName}${purchaseData.notes ? ` - ${purchaseData.notes}` : ''}`
+
+    // Actualizar la compra
+    const updatedPurchase: InventoryMovement = {
+      ...selectedPurchase,
+      quantity: quantityInGrams,
+      cost: totalCost,
+      supplierId: purchaseData.supplierId,
+      supplierName: supplier?.name || 'Proveedor desconocido',
+      reason,
+      updatedAt: new Date()
+    }
+
+    // Actualizar la lista de compras
+    setPurchases(prev => prev.map(p =>
+      p.id === purchaseData.id ? updatedPurchase : p
+    ))
+
+    // Actualizar el stock del producto
+    if (product && stockDifference !== 0) {
+      setProducts(prev => prev.map(p =>
+        p.id === selectedPurchase.productId
+          ? { ...p, stock: p.stock + stockDifference, updatedAt: new Date() }
+          : p
+      ))
+    }
+
+    setEditModalOpen(false)
+    setSelectedPurchase(null)
+  }
+
+  // Función para confirmar la eliminación
+  const handleConfirmDelete = async () => {
+    if (!selectedPurchase) return
+
+    // Restar la cantidad del stock del producto
+    setProducts(prev => prev.map(p =>
+      p.id === selectedPurchase.productId
+        ? { ...p, stock: p.stock - selectedPurchase.quantity, updatedAt: new Date() }
+        : p
+    ))
+
+    // Eliminar la compra de la lista
+    setPurchases(prev => prev.filter(p => p.id !== selectedPurchase.id))
+
+    setDeleteModalOpen(false)
+    setSelectedPurchase(null)
+  }
+
   const stats = {
     totalPurchases: purchases.length,
     totalSpent: purchases.reduce((sum, p) => sum + (p.cost || 0), 0),
@@ -180,6 +274,8 @@ export function PurchasesContent({ user }: PurchasesContentProps) {
           <PurchasesHistory
             purchases={purchases}
             isLoading={isLoading}
+            onEdit={handleEditPurchase}
+            onDelete={handleDeletePurchase}
           />
         )}
 
@@ -190,6 +286,29 @@ export function PurchasesContent({ user }: PurchasesContentProps) {
           />
         )}
       </div>
+
+      {/* Modales */}
+      <EditPurchaseModal
+        isOpen={editModalOpen}
+        onClose={() => {
+          setEditModalOpen(false)
+          setSelectedPurchase(null)
+        }}
+        purchase={selectedPurchase}
+        products={products}
+        suppliers={suppliers}
+        onSave={handleSaveEdit}
+      />
+
+      <DeletePurchaseModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false)
+          setSelectedPurchase(null)
+        }}
+        purchase={selectedPurchase}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   )
 }

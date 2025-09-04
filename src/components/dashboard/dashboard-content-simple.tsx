@@ -135,7 +135,7 @@ export function DashboardContentSimple({ user }: DashboardContentProps) {
             <AIInsightsSimple isLoading={isLoading} />
             
             {/* Acciones rápidas */}
-            <QuickActionsSimple />
+            <QuickActionsSimple user={user} />
           </div>
         </div>
       </div>

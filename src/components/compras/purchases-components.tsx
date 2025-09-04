@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { 
   Select,
   SelectContent,
@@ -15,18 +16,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { 
-  ShoppingCart, 
-  Plus, 
-  Package, 
-  DollarSign, 
-  Users, 
+import {
+  ShoppingCart,
+  Plus,
+  Package,
+  DollarSign,
+  Users,
   TrendingUp,
   Calendar,
   FileText,
   Truck,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Edit,
+  Trash2,
+  MoreVertical
 } from 'lucide-react'
 import { Product, Supplier, InventoryMovement } from '@/lib/mock-data'
 
@@ -658,9 +662,11 @@ export function NewPurchaseForm({ products, suppliers, onSubmit, isLoading }: Ne
 interface PurchasesHistoryProps {
   purchases: InventoryMovement[]
   isLoading: boolean
+  onEdit: (purchase: InventoryMovement) => void
+  onDelete: (purchase: InventoryMovement) => void
 }
 
-export function PurchasesHistory({ purchases, isLoading }: PurchasesHistoryProps) {
+export function PurchasesHistory({ purchases, isLoading, onEdit, onDelete }: PurchasesHistoryProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -765,9 +771,27 @@ export function PurchasesHistory({ purchases, isLoading }: PurchasesHistoryProps
                   <p className="text-sm text-gray-500 mb-1">
                     {formatQuantity(purchase.quantity)}
                   </p>
-                  <div className="flex items-center text-xs text-green-600">
+                  <div className="flex items-center text-xs text-green-600 mb-2">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Completado
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onEdit(purchase)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onDelete(purchase)}
+                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -878,5 +902,406 @@ export function SuppliersManagement({ suppliers, isLoading }: SuppliersManagemen
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+// Modal de edición de compras
+interface EditPurchaseModalProps {
+  isOpen: boolean
+  onClose: () => void
+  purchase: InventoryMovement | null
+  products: Product[]
+  suppliers: Supplier[]
+  onSave: (purchaseData: {
+    id: string
+    quantity: number
+    unitType: 'gramos' | 'media_libra' | 'libra' | 'kilogramo'
+    unitCost: number
+    supplierId: string
+    notes?: string
+  }) => void
+}
+
+export function EditPurchaseModal({
+  isOpen,
+  onClose,
+  purchase,
+  products,
+  suppliers,
+  onSave
+}: EditPurchaseModalProps) {
+  const [formData, setFormData] = useState({
+    quantity: '',
+    unitType: 'kilogramo' as 'gramos' | 'media_libra' | 'libra' | 'kilogramo',
+    unitCost: '',
+    supplierId: '',
+    notes: ''
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Función para convertir gramos a la unidad original
+  const convertFromGrams = (grams: number, targetUnit: string) => {
+    switch (targetUnit) {
+      case 'gramos': return grams
+      case 'media_libra': return grams / 227
+      case 'libra': return grams / 454
+      case 'kilogramo': return grams / 1000
+      default: return grams
+    }
+  }
+
+  // Función para extraer la cantidad original del reason
+  const extractOriginalQuantityAndUnit = (reason: string) => {
+    const match = reason.match(/(\d+(?:\.\d+)?)\s+(gramos|media_libra|libra|kilogramo)/)
+    if (match) {
+      return {
+        quantity: parseFloat(match[1]),
+        unit: match[2] as 'gramos' | 'media_libra' | 'libra' | 'kilogramo'
+      }
+    }
+    // Fallback: convertir desde gramos a kilogramos
+    return {
+      quantity: (purchase?.quantity || 0) / 1000,
+      unit: 'kilogramo' as const
+    }
+  }
+
+  useEffect(() => {
+    if (purchase && isOpen) {
+      const { quantity, unit } = extractOriginalQuantityAndUnit(purchase.reason)
+      const unitCost = purchase.cost ? purchase.cost / quantity : 0
+
+      setFormData({
+        quantity: quantity.toString(),
+        unitType: unit,
+        unitCost: unitCost.toString(),
+        supplierId: purchase.supplierId || '',
+        notes: purchase.reason.includes(' - ') ? purchase.reason.split(' - ')[1] || '' : ''
+      })
+    }
+  }, [purchase, isOpen])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!purchase || !formData.quantity || !formData.unitCost || !formData.supplierId) {
+      alert('Por favor completa todos los campos obligatorios')
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      await onSave({
+        id: purchase.id,
+        quantity: parseFloat(formData.quantity),
+        unitType: formData.unitType,
+        unitCost: parseFloat(formData.unitCost),
+        supplierId: formData.supplierId,
+        notes: formData.notes || undefined
+      })
+
+      onClose()
+      alert('Compra actualizada exitosamente')
+    } catch (error) {
+      console.error('Error al actualizar compra:', error)
+      alert('Error al actualizar la compra')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const calculateTotal = () => {
+    const quantity = parseFloat(formData.quantity) || 0
+    const unitCost = parseFloat(formData.unitCost) || 0
+    return quantity * unitCost
+  }
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+    }).format(amount)
+  }
+
+  if (!purchase) return null
+
+  const product = products.find(p => p.id === purchase.productId)
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold flex items-center">
+            <Edit className="h-5 w-5 mr-2 text-amber-600" />
+            Editar Compra
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Información del producto (readonly) */}
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <Label className="text-sm font-medium text-gray-700">Producto</Label>
+            <div className="mt-1 p-3 bg-white border rounded-md">
+              <div className="flex items-center space-x-3">
+                <Package className="h-5 w-5 text-gray-400" />
+                <div>
+                  <p className="font-medium text-gray-900">{product?.name}</p>
+                  <p className="text-sm text-gray-500">Stock actual: {product?.stock}g</p>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              El producto no se puede cambiar al editar una compra
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Proveedor */}
+            <div className="space-y-2">
+              <Label htmlFor="supplier">Proveedor *</Label>
+              <Select
+                value={formData.supplierId}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, supplierId: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar proveedor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {suppliers.map((supplier) => (
+                    <SelectItem key={supplier.id} value={supplier.id}>
+                      <div className="flex items-center space-x-2">
+                        <Truck className="h-4 w-4 text-gray-400" />
+                        <span>{supplier.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Tipo de unidad */}
+            <div className="space-y-2">
+              <Label htmlFor="unitType">Tipo de Unidad *</Label>
+              <Select
+                value={formData.unitType}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, unitType: value as any }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="gramos">Gramos</SelectItem>
+                  <SelectItem value="media_libra">Media Libra (227g)</SelectItem>
+                  <SelectItem value="libra">Libra (454g)</SelectItem>
+                  <SelectItem value="kilogramo">Kilogramo (1000g)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Cantidad */}
+            <div className="space-y-2">
+              <Label htmlFor="quantity">Cantidad *</Label>
+              <Input
+                id="quantity"
+                type="number"
+                step="0.01"
+                min="0.01"
+                placeholder="0.00"
+                value={formData.quantity}
+                onChange={(e) => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
+                required
+              />
+            </div>
+
+            {/* Costo unitario */}
+            <div className="space-y-2">
+              <Label htmlFor="unitCost">Costo Unitario *</Label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="unitCost"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  placeholder="0.00"
+                  className="pl-10"
+                  value={formData.unitCost}
+                  onChange={(e) => setFormData(prev => ({ ...prev, unitCost: e.target.value }))}
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Costo total calculado */}
+          <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-amber-800">Costo Total:</span>
+              <span className="text-lg font-bold text-amber-900">
+                {formatCurrency(calculateTotal())}
+              </span>
+            </div>
+          </div>
+
+          {/* Notas */}
+          <div className="space-y-2">
+            <Label htmlFor="notes">Notas (opcional)</Label>
+            <Textarea
+              id="notes"
+              placeholder="Notas adicionales sobre la compra..."
+              rows={3}
+              value={formData.notes}
+              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+            />
+          </div>
+
+          {/* Botones */}
+          <div className="flex justify-end space-x-4 pt-4 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="bg-amber-600 hover:bg-amber-700"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Actualizando...' : 'Actualizar Compra'}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// Modal de confirmación de eliminación
+interface DeletePurchaseModalProps {
+  isOpen: boolean
+  onClose: () => void
+  purchase: InventoryMovement | null
+  onConfirm: () => void
+}
+
+export function DeletePurchaseModal({
+  isOpen,
+  onClose,
+  purchase,
+  onConfirm
+}: DeletePurchaseModalProps) {
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+    }).format(amount)
+  }
+
+  const formatQuantity = (quantity: number) => {
+    if (quantity >= 1000) {
+      return `${(quantity / 1000).toFixed(1)} kg`
+    }
+    return `${quantity.toFixed(0)} g`
+  }
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('es-CO', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date)
+  }
+
+  const handleConfirm = async () => {
+    setIsDeleting(true)
+    try {
+      await onConfirm()
+      onClose()
+    } catch (error) {
+      console.error('Error al eliminar compra:', error)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  if (!purchase) return null
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold flex items-center text-red-600">
+            <AlertCircle className="h-5 w-5 mr-2" />
+            Confirmar Eliminación
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            ¿Estás seguro de que deseas eliminar esta compra? Esta acción no se puede deshacer.
+          </p>
+
+          {/* Detalles de la compra */}
+          <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+            <div className="flex items-center space-x-2">
+              <Package className="h-4 w-4 text-gray-400" />
+              <span className="font-medium">{purchase.productName}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Truck className="h-4 w-4 text-gray-400" />
+              <span className="text-sm text-gray-600">{purchase.supplierName}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Calendar className="h-4 w-4 text-gray-400" />
+              <span className="text-sm text-gray-600">{formatDate(purchase.createdAt)}</span>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+              <span className="text-sm text-gray-600">Cantidad:</span>
+              <span className="font-medium">{formatQuantity(purchase.quantity)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Costo:</span>
+              <span className="font-medium">{formatCurrency(purchase.cost || 0)}</span>
+            </div>
+          </div>
+
+          <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+            <p className="text-sm text-red-800">
+              <strong>Importante:</strong> Al eliminar esta compra, se restará la cantidad ({formatQuantity(purchase.quantity)}) del stock actual del producto.
+            </p>
+          </div>
+
+          {/* Botones */}
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              disabled={isDeleting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirm}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Eliminando...' : 'Eliminar Compra'}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }

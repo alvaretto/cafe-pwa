@@ -84,13 +84,22 @@ const AUTH_KEY = 'tinto-auth-user'
  */
 function isDevelopmentMode(): boolean {
   // Verificar múltiples formas de detectar desarrollo
-  return (
-    process.env.NODE_ENV === 'development' ||
-    process.env.NODE_ENV === 'dev' ||
-    typeof window !== 'undefined' && window.location.hostname === 'localhost' ||
-    typeof window !== 'undefined' && window.location.hostname === '127.0.0.1' ||
-    typeof window !== 'undefined' && window.location.port === '3000'
-  )
+  const isNodeDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'dev'
+
+  if (typeof window !== 'undefined') {
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    const isDevPort = ['3000', '3001', '3002', '3003'].includes(window.location.port)
+    console.log('🔍 isDevelopmentMode check:', {
+      hostname: window.location.hostname,
+      port: window.location.port,
+      isLocalhost,
+      isDevPort,
+      isNodeDev
+    })
+    return isNodeDev || isLocalhost || isDevPort
+  }
+
+  return isNodeDev
 }
 
 /**
@@ -134,34 +143,53 @@ function performAutoLogin(): User {
  * Obtiene el usuario actual desde localStorage
  */
 export function getCurrentUser(): User | null {
-  if (typeof window === 'undefined') return null
+  if (typeof window === 'undefined') {
+    console.log('🔍 getCurrentUser: window is undefined (SSR)')
+    return null
+  }
 
   try {
+    console.log('🔍 getCurrentUser: Checking localStorage...')
     const stored = localStorage.getItem(AUTH_KEY)
+    const isDev = isDevelopmentMode()
+
+    console.log('🔍 getCurrentUser:', {
+      hasStoredData: !!stored,
+      isDevelopmentMode: isDev,
+      authKey: AUTH_KEY
+    })
+
     if (!stored) {
+      console.log('🔍 getCurrentUser: No stored data found')
       // En modo desarrollo, auto-login con usuario admin
-      if (isDevelopmentMode()) {
+      if (isDev) {
+        console.log('🔍 getCurrentUser: Development mode detected, performing auto-login')
         return performAutoLogin()
       }
+      console.log('🔍 getCurrentUser: Not in development mode, returning null')
       return null
     }
 
+    console.log('🔍 getCurrentUser: Found stored data, parsing...')
     const userData = JSON.parse(stored)
-    return {
+    const user = {
       ...userData,
       lastLogin: new Date(userData.lastLogin),
       emailVerified: userData.emailVerified ? new Date(userData.emailVerified) : null,
       createdAt: new Date(userData.createdAt),
       updatedAt: new Date(userData.updatedAt),
     }
+    console.log('🔍 getCurrentUser: Successfully parsed user:', user.name, user.email)
+    return user
   } catch (error) {
-    console.error('Error getting current user:', error)
+    console.error('❌ getCurrentUser: Error getting current user:', error)
     // En caso de error y modo desarrollo, intentar auto-login
     if (isDevelopmentMode()) {
       try {
+        console.log('🔍 getCurrentUser: Error occurred, trying auto-login in dev mode')
         return performAutoLogin()
       } catch (autoLoginError) {
-        console.error('Error en auto-login:', autoLoginError)
+        console.error('❌ getCurrentUser: Error en auto-login:', autoLoginError)
       }
     }
     return null

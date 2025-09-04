@@ -1,0 +1,12 @@
+// Variables de entorno para testing
+process.env.NODE_ENV = 'test'
+process.env.NEXTAUTH_SECRET = 'test-secret-key-for-testing'
+process.env.NEXTAUTH_URL = 'http://localhost:3000'
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test_db'
+process.env.NEXT_PUBLIC_FIREBASE_API_KEY = 'test-firebase-api-key'
+process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = 'test-project-id'
+process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = 'test-project.firebaseapp.com'
+process.env.GEMINI_API_KEY = 'test-gemini-api-key'
+process.env.RESEND_API_KEY = 'test-resend-api-key'
+process.env.VERCEL_TOKEN = 'test-vercel-token'
+process.env.NETLIFY_AUTH_TOKEN = 'test-netlify-token'

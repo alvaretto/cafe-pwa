@@ -1,15 +1,11 @@
 'use client'
 
 import { PurchasesContent } from './purchases-content'
-import { AuthWrapper } from '@/components/common/auth-wrapper'
+import { createMockUser } from '@/lib/auth-simple'
 
 export function PurchasesPageClient() {
-  return (
-    <AuthWrapper
-      loadingMessage="Cargando módulo de compras y proveedores..."
-      redirectTo="/"
-    >
-      {(user) => <PurchasesContent user={user} />}
-    </AuthWrapper>
-  )
+  // Para desarrollo, usar directamente un usuario mock
+  const user = createMockUser()
+
+  return <PurchasesContent user={user} />
 }
