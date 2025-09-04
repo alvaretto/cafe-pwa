@@ -2276,6 +2276,17 @@ export function updateConfigValue(key: string, value: any, updatedBy: string): b
   return false
 }
 
+/**
+ * Función auxiliar para deserializar fechas desde localStorage
+ */
+function deserializeUserPreferences(data: any): UserPreferences {
+  return {
+    ...data,
+    // Convertir updatedAt de string a Date si es necesario
+    updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+  }
+}
+
 export function getUserPreferences(userId: string): UserPreferences {
   // Intentar cargar desde localStorage
   if (typeof window !== 'undefined') {
@@ -2283,10 +2294,14 @@ export function getUserPreferences(userId: string): UserPreferences {
       const stored = localStorage.getItem(`tinto-user-preferences-${userId}`)
       if (stored) {
         const parsedPreferences = JSON.parse(stored)
+
+        // Deserializar fechas correctamente
+        const deserializedPreferences = deserializeUserPreferences(parsedPreferences)
+
         return {
           userId,
           ...DEFAULT_USER_PREFERENCES,
-          ...parsedPreferences,
+          ...deserializedPreferences,
         }
       }
     } catch (error) {
@@ -2298,6 +2313,7 @@ export function getUserPreferences(userId: string): UserPreferences {
   return {
     userId,
     ...DEFAULT_USER_PREFERENCES,
+    updatedAt: new Date(),
   }
 }
 
@@ -2317,7 +2333,10 @@ export function updateUserPreferences(userId: string, preferences: Partial<UserP
     // Guardar en localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem(`tinto-user-preferences-${userId}`, JSON.stringify(updatedPreferences))
-      console.log('✅ User preferences updated and saved to localStorage:', updatedPreferences)
+      console.log('✅ User preferences updated and saved to localStorage:', {
+        ...updatedPreferences,
+        updatedAt: updatedPreferences.updatedAt.toISOString(),
+      })
     }
 
     return true

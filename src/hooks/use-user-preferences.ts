@@ -13,6 +13,15 @@ export function useUserPreferences() {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Función auxiliar para deserializar fechas
+  const deserializePreferences = useCallback((data: any): UserPreferences => {
+    return {
+      ...data,
+      // Convertir updatedAt de string a Date si es necesario
+      updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+    }
+  }, [])
+
   // Cargar preferencias desde localStorage
   const loadPreferences = useCallback(() => {
     try {
@@ -25,15 +34,18 @@ export function useUserPreferences() {
 
       // Intentar cargar desde localStorage
       const stored = localStorage.getItem(`${USER_PREFERENCES_KEY}-${user.id}`)
-      
+
       if (stored) {
         const parsedPreferences = JSON.parse(stored)
-        setPreferences(parsedPreferences)
+        // Deserializar fechas correctamente
+        const deserializedPreferences = deserializePreferences(parsedPreferences)
+        setPreferences(deserializedPreferences)
       } else {
         // Si no hay preferencias guardadas, usar las por defecto
         const defaultPreferences: UserPreferences = {
           userId: user.id,
           ...DEFAULT_USER_PREFERENCES,
+          updatedAt: new Date(),
         }
         setPreferences(defaultPreferences)
         // Guardar las preferencias por defecto
@@ -47,13 +59,14 @@ export function useUserPreferences() {
         const defaultPreferences: UserPreferences = {
           userId: user.id,
           ...DEFAULT_USER_PREFERENCES,
+          updatedAt: new Date(),
         }
         setPreferences(defaultPreferences)
       }
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [deserializePreferences])
 
   // Guardar preferencias en localStorage
   const savePreferences = useCallback((newPreferences: Partial<UserPreferences>) => {
@@ -69,8 +82,11 @@ export function useUserPreferences() {
 
       setPreferences(updatedPreferences)
       localStorage.setItem(`${USER_PREFERENCES_KEY}-${user.id}`, JSON.stringify(updatedPreferences))
-      
-      console.log('User preferences saved:', updatedPreferences)
+
+      console.log('User preferences saved:', {
+        ...updatedPreferences,
+        updatedAt: updatedPreferences.updatedAt.toISOString(),
+      })
       return true
     } catch (error) {
       console.error('Error saving user preferences:', error)

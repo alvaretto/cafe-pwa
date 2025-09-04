@@ -1247,7 +1247,11 @@ export function ConfigOverview({ categories, systemConfig, userPreferences, stat
               
               <div className="pt-4 border-t">
                 <div className="text-xs text-gray-500">
-                  Última actualización: {userPreferences.updatedAt.toLocaleDateString('es-CO')}
+                  Última actualización: {
+                    userPreferences.updatedAt instanceof Date
+                      ? userPreferences.updatedAt.toLocaleDateString('es-CO')
+                      : new Date(userPreferences.updatedAt).toLocaleDateString('es-CO')
+                  }
                 </div>
               </div>
             </div>
