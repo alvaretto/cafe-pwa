@@ -13,9 +13,9 @@ import {
   updateUserPreferences
 } from '@/lib/mock-data'
 import { DashboardHeaderSimple } from '@/components/dashboard/dashboard-header-simple'
-import { 
-  ConfigHeader, 
-  ConfigStats, 
+import {
+  ConfigHeader,
+  ConfigStats,
   ConfigTabs,
   ConfigOverview,
   SystemSettings,
@@ -24,6 +24,7 @@ import {
   NotificationSettings,
   SecuritySettings
 } from './config-components'
+import { BackupSettings } from './backup-settings'
 
 interface ConfigContentProps {
   user: User
@@ -34,7 +35,7 @@ export function ConfigContent({ user }: ConfigContentProps) {
   const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null)
   const [categories, setCategories] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'overview' | 'system' | 'user' | 'company' | 'notifications' | 'security'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'system' | 'user' | 'company' | 'notifications' | 'security' | 'backups'>('overview')
   const [selectedCategory, setSelectedCategory] = useState<string>('general')
   const [hasChanges, setHasChanges] = useState(false)
 
@@ -209,6 +210,12 @@ export function ConfigContent({ user }: ConfigContentProps) {
           <SecuritySettings
             config={systemConfig.filter(c => c.category === 'seguridad')}
             onConfigChange={handleSystemConfigChange}
+            isLoading={isLoading}
+          />
+        )}
+
+        {activeTab === 'backups' && (
+          <BackupSettings
             isLoading={isLoading}
           />
         )}

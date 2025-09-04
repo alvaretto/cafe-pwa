@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización Dual de Stock - CRM Tinto del Mirador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #8B4513;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .feature {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #8B4513;
+        }
+        .feature h3 {
+            color: #8B4513;
+            margin-top: 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .implemented {
+            background: #d4edda;
+            color: #155724;
+        }
+        .test-link {
+            display: inline-block;
+            background: #8B4513;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .test-link:hover {
+            background: #6d3410;
+        }
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .example-box {
+            background: #f0f8ff;
+            border: 1px solid #b3d9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .conversion-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .conversion-table th,
+        .conversion-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .conversion-table th {
+            background-color: #8B4513;
+            color: white;
+        }
+        .conversion-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .math-formula {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Visualización Dual de Stock - CRM Tinto del Mirador</h1>
+        
+        <div class="instructions">
+            <h3>🎯 Funcionalidad Implementada</h3>
+            <p>Se ha implementado la <strong>visualización dual de stock</strong> que muestra las cantidades tanto en gramos como en libras para facilitar la gestión de productos de café.</p>
+            <p><strong>URL de prueba:</strong> <a href="http://localhost:3001/inventario" target="_blank">http://localhost:3001/inventario</a></p>
+        </div>
+
+        <div class="feature">
+            <h3>🔧 Funciones de Conversión Implementadas</h3>
+            <span class="status implemented">✅ IMPLEMENTADO</span>
+            
+            <div class="math-formula">
+                <strong>Fórmula de Conversión:</strong><br>
+                1 libra = 453.592 gramos<br>
+                gramos ÷ 453.592 = libras
+            </div>
+
+            <p><strong>Nuevas funciones en <code>src/lib/utils.ts</code>:</strong></p>
+            <ul>
+                <li><code>convertGramsToPounds(grams)</code> - Convierte gramos a libras</li>
+                <li><code>convertPoundsToGrams(pounds)</code> - Convierte libras a gramos</li>
+                <li><code>formatDualStock(grams)</code> - Formato completo: "2,268 g (5.0 lb)"</li>
+                <li><code>formatCompactDualStock(grams)</code> - Formato compacto: "2.3k g (5.0 lb)"</li>
+            </ul>
+        </div>
+
+        <div class="feature">
+            <h3>📋 Ejemplos de Visualización</h3>
+            <span class="status implemented">✅ IMPLEMENTADO</span>
+            
+            <table class="conversion-table">
+                <thead>
+                    <tr>
+                        <th>Gramos</th>
+                        <th>Libras</th>
+                        <th>Formato Mostrado</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2,268 g</td>
+                        <td>5.0 lb</td>
+                        <td><code>2,268 g (5.0 lb)</code></td>
+                        <td>✅ Stock Normal</td>
+                    </tr>
+                    <tr>
+                        <td>1,814 g</td>
+                        <td>4.0 lb</td>
+                        <td><code>1,814 g (4.0 lb)</code></td>
+                        <td>✅ Stock Normal</td>
+                    </tr>
+                    <tr>
+                        <td>4,990 g</td>
+                        <td>11.0 lb</td>
+                        <td><code>4,990 g (11.0 lb)</code></td>
+                        <td>✅ Stock Alto</td>
+                    </tr>
+                    <tr>
+                        <td>136 g</td>
+                        <td>0.3 lb</td>
+                        <td><code>136 g (0.3 lb)</code></td>
+                        <td>🔴 Stock Crítico</td>
+                    </tr>
+                    <tr>
+                        <td>454 g</td>
+                        <td>1.0 lb</td>
+                        <td><code>454 g (1.0 lb)</code></td>
+                        <td>⚠️ Stock Mínimo</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="feature">
+            <h3>🎨 Ubicaciones Actualizadas</h3>
+            <span class="status implemented">✅ IMPLEMENTADO</span>
+            
+            <p><strong>La visualización dual se aplica en:</strong></p>
+            <ul>
+                <li><strong>Header del Inventario:</strong> Valor total de stock</li>
+                <li><strong>Tarjetas de Productos:</strong> Stock actual, mínimo y óptimo</li>
+                <li><strong>Panel de Alertas:</strong> Stock actual y mínimo requerido</li>
+                <li><strong>Modal de Ajuste:</strong> Stock actual del producto</li>
+                <li><strong>Sugerencias de Reabastecimiento:</strong> Stock actual y mínimo</li>
+                <li><strong>Historial de Movimientos:</strong> Cantidades de entrada/salida</li>
+            </ul>
+        </div>
+
+        <div class="feature">
+            <h3>📊 Datos Mock Actualizados</h3>
+            <span class="status implemented">✅ IMPLEMENTADO</span>
+            
+            <p><strong>Productos con stocks realistas:</strong></p>
+            <div class="example-box">
+• Café Arábica Premium: 2,268 g (5.0 lb) - Stock normal<br>
+• Café Robusta Intenso: 1,814 g (4.0 lb) - Stock normal<br>
+• Mezcla Tinto del Mirador: 4,990 g (11.0 lb) - Stock alto<br>
+• Café Orgánico Certificado: 136 g (0.3 lb) - Stock crítico ⚠️
+            </div>
+        </div>
+
+        <div class="feature">
+            <h3>🔍 Características Técnicas</h3>
+            <span class="status implemented">✅ IMPLEMENTADO</span>
+            
+            <ul>
+                <li><strong>Precisión decimal:</strong> Conversiones exactas usando 453.592 g/lb</li>
+                <li><strong>Formato localizado:</strong> Números con formato colombiano (comas para miles)</li>
+                <li><strong>Formato compacto:</strong> Para espacios reducidos (ej: "2.3k g (5.0 lb)")</li>
+                <li><strong>Consistencia visual:</strong> Mismo formato en toda la aplicación</li>
+                <li><strong>Alertas mantenidas:</strong> Las alertas críticas funcionan con ambas unidades</li>
+                <li><strong>Responsive:</strong> Se adapta a diferentes tamaños de pantalla</li>
+            </ul>
+        </div>
+
+        <div class="instructions">
+            <h3>🧪 Cómo Probar la Funcionalidad</h3>
+            
+            <p><strong>Pasos para verificar:</strong></p>
+            <ol>
+                <li>Navega a <strong>http://localhost:3001/inventario</strong></li>
+                <li>Observa el header: "Valor Total" muestra stock en formato dual</li>
+                <li>En la pestaña <strong>"Resumen"</strong>: Revisa las tarjetas de productos</li>
+                <li>En la pestaña <strong>"Alertas"</strong>: Verifica alertas con formato dual</li>
+                <li>En la pestaña <strong>"Movimientos"</strong>: Observa cantidades en formato dual</li>
+                <li>En la pestaña <strong>"Reabastecimiento"</strong>: Revisa sugerencias con formato dual</li>
+                <li>Haz clic en "Ajustar Stock" en cualquier producto para ver el modal</li>
+            </ol>
+
+            <p><strong>Verificaciones matemáticas:</strong></p>
+            <ul>
+                <li>2,268 g = 5.0 lb ✓</li>
+                <li>1,814 g = 4.0 lb ✓</li>
+                <li>454 g = 1.0 lb ✓</li>
+                <li>136 g = 0.3 lb ✓</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:3001/inventario" class="test-link">
+                🚀 Probar Visualización Dual en Inventario
+            </a>
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background: #d4edda; border-radius: 5px;">
+            <h3 style="color: #155724; margin-top: 0;">✅ Estado de Implementación</h3>
+            <p style="color: #155724; margin-bottom: 0;">
+                <strong>COMPLETADO:</strong> La visualización dual de stock en gramos y libras ha sido implementada exitosamente en todo el módulo de inventario. 
+                La aplicación está funcionando en <strong>http://localhost:3001</strong> y las conversiones son matemáticamente precisas usando la fórmula estándar de 1 libra = 453.592 gramos.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

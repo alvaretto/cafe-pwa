@@ -10,16 +10,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
-import { 
-  Settings, 
-  Save, 
-  RotateCcw, 
-  Building, 
-  User, 
-  Bell, 
-  Shield, 
-  Palette, 
-  Globe, 
+import {
+  Settings,
+  Save,
+  RotateCcw,
+  Building,
+  User,
+  Bell,
+  Shield,
+  Palette,
+  Globe,
   Monitor,
   Smartphone,
   Mail,
@@ -29,7 +29,8 @@ import {
   Package,
   ShoppingCart,
   Eye,
-  EyeOff
+  EyeOff,
+  Database
 } from 'lucide-react'
 import { SystemConfig, UserPreferences } from '@/lib/mock-data'
 
@@ -173,7 +174,7 @@ export function ConfigStats({ stats, categories, isLoading }: ConfigStatsProps) 
 // Tabs de navegación
 interface ConfigTabsProps {
   activeTab: string
-  onTabChange: (tab: 'overview' | 'system' | 'user' | 'company' | 'notifications' | 'security') => void
+  onTabChange: (tab: 'overview' | 'system' | 'user' | 'company' | 'notifications' | 'security' | 'backups') => void
   categoriesCount: number
   hasChanges: boolean
 }
@@ -186,6 +187,7 @@ export function ConfigTabs({ activeTab, onTabChange, categoriesCount, hasChanges
     { id: 'company', label: 'Empresa', icon: Building },
     { id: 'notifications', label: 'Notificaciones', icon: Bell },
     { id: 'security', label: 'Seguridad', icon: Shield },
+    { id: 'backups', label: 'BackUps', icon: Database },
   ]
 
   return (
