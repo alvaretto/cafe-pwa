@@ -1,0 +1,408 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Usuario con sistema de roles jerárquico
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String?
+  image             String?
+  role              UserRole @default(VENDEDOR)
+  isActive          Boolean  @default(true)
+  lastLogin         DateTime?
+  emailVerified     DateTime?
+  twoFactorEnabled  Boolean  @default(false)
+  biometricEnabled  Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relaciones
+  sales             Sale[]
+  expenses          Expense[]
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+  
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  VENDEDOR
+}
+
+// Modelo de Cliente con información completa
+model Customer {
+  id                String   @id @default(cuid())
+  firstName         String
+  lastName          String
+  email             String?  @unique
+  phone             String?
+  alternativePhone  String?
+  homeAddress       String?
+  workAddress       String?
+  birthMonth        Int?     // 1-12
+  birthDay          Int?     // 1-31
+  coffeePreferences String?
+  notes             String?
+  isActive          Boolean  @default(true)
+  segment           CustomerSegment @default(NUEVO)
+  loyaltyPoints     Int      @default(0)
+  totalSpent        Decimal  @default(0) @db.Decimal(10, 2)
+  lastPurchase      DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relaciones
+  sales             Sale[]
+  loyaltyTransactions LoyaltyTransaction[]
+  
+  @@map("customers")
+}
+
+enum CustomerSegment {
+  NUEVO
+  OCASIONAL
+  FRECUENTE
+  VIP
+  INACTIVO
+}
+
+// Modelo de Categoría de Productos
+model ProductCategory {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relaciones
+  products    Product[]
+  
+  @@map("product_categories")
+}
+
+// Modelo de Producto con precios múltiples
+model Product {
+  id                String   @id @default(cuid())
+  name              String
+  description       String?
+  sku               String?  @unique
+  barcode           String?  @unique
+  qrCode            String?
+  
+  // Precios por unidad de medida
+  pricePerPound     Decimal  @db.Decimal(10, 2) // Precio por libra
+  pricePerHalfPound Decimal  @db.Decimal(10, 2) // Precio por media libra
+  pricePerKilo      Decimal  @db.Decimal(10, 2) // Precio por kilogramo
+  pricePerGram      Decimal  @db.Decimal(10, 2) // Precio por gramo
+  
+  cost              Decimal? @db.Decimal(10, 2) // Costo calculado por IA
+  margin            Decimal? @db.Decimal(5, 2)  // Margen de ganancia %
+  
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relaciones
+  categoryId        String
+  category          ProductCategory @relation(fields: [categoryId], references: [id])
+  saleItems         SaleItem[]
+  inventoryItems    InventoryItem[]
+  priceHistory      ProductPriceHistory[]
+  
+  @@map("products")
+}
+
+// Historial de cambios de precios
+model ProductPriceHistory {
+  id                String   @id @default(cuid())
+  productId         String
+  pricePerPound     Decimal  @db.Decimal(10, 2)
+  pricePerHalfPound Decimal  @db.Decimal(10, 2)
+  pricePerKilo      Decimal  @db.Decimal(10, 2)
+  pricePerGram      Decimal  @db.Decimal(10, 2)
+  reason            String?
+  createdAt         DateTime @default(now())
+
+  // Relaciones
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@map("product_price_history")
+}
+
+// Modelo de Venta
+model Sale {
+  id                 String     @id @default(cuid())
+  saleNumber         String     @unique // Número de venta generado automáticamente
+  customerId         String?
+  sellerId           String
+  subtotal           Decimal    @db.Decimal(10, 2)
+  discount           Decimal    @default(0) @db.Decimal(10, 2)
+  tax                Decimal    @default(0) @db.Decimal(10, 2)
+  total              Decimal    @db.Decimal(10, 2)
+  paymentMethod      PaymentMethod @default(EFECTIVO)
+  agreedPaymentDate  DateTime?  // Fecha acordada para pagos a crédito
+  status             SaleStatus @default(COMPLETADA)
+  notes              String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  // Relaciones
+  customer      Customer?  @relation(fields: [customerId], references: [id])
+  seller        User       @relation(fields: [sellerId], references: [id])
+  items         SaleItem[]
+  
+  @@map("sales")
+}
+
+enum PaymentMethod {
+  EFECTIVO
+  TARJETA_CREDITO
+  TARJETA_DEBITO
+  TRANSFERENCIA
+  DIGITAL
+  CREDITO
+}
+
+enum SaleStatus {
+  PENDIENTE
+  COMPLETADA
+  CANCELADA
+  DEVUELTA
+}
+
+// Items de venta
+model SaleItem {
+  id          String      @id @default(cuid())
+  saleId      String
+  productId   String
+  quantity    Decimal     @db.Decimal(8, 3) // Cantidad en gramos
+  unitType    UnitType    // Tipo de unidad vendida
+  unitPrice   Decimal     @db.Decimal(10, 2)
+  totalPrice  Decimal     @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now())
+
+  // Relaciones
+  sale        Sale        @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product     Product     @relation(fields: [productId], references: [id])
+  
+  @@map("sale_items")
+}
+
+enum UnitType {
+  GRAMO
+  MEDIA_LIBRA
+  LIBRA
+  KILOGRAMO
+}
+
+// Modelo de Gastos
+model Expense {
+  id            String        @id @default(cuid())
+  categoryId    String
+  subcategory   String?
+  description   String
+  amount        Decimal       @db.Decimal(10, 2)
+  paymentMethod PaymentMethod @default(EFECTIVO)
+  receipt       String?       // URL del comprobante digital
+  notes         String?
+  expenseDate   DateTime
+  userId        String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relaciones
+  category      ExpenseCategory @relation(fields: [categoryId], references: [id])
+  user          User            @relation(fields: [userId], references: [id])
+  
+  @@map("expenses")
+}
+
+// Categorías de gastos
+model ExpenseCategory {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  budget      Decimal?  @db.Decimal(10, 2) // Presupuesto mensual
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relaciones
+  expenses    Expense[]
+  
+  @@map("expense_categories")
+}
+
+// Modelo de Inventario
+model InventoryItem {
+  id                String    @id @default(cuid())
+  productId         String    @unique
+  currentStock      Decimal   @db.Decimal(10, 3) // Stock actual en gramos
+  minimumStock      Decimal   @db.Decimal(10, 3) // Punto de reorden
+  maximumStock      Decimal?  @db.Decimal(10, 3) // Stock máximo
+  supplier          String?
+  lastRestockDate   DateTime?
+  expirationDate    DateTime?
+  location          String?   // Ubicación física
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relaciones
+  product           Product   @relation(fields: [productId], references: [id])
+  movements         InventoryMovement[]
+  
+  @@map("inventory_items")
+}
+
+// Movimientos de inventario
+model InventoryMovement {
+  id              String            @id @default(cuid())
+  inventoryItemId String
+  type            MovementType
+  quantity        Decimal           @db.Decimal(10, 3) // Cantidad en gramos
+  reason          String?
+  reference       String?           // Referencia a venta, compra, etc.
+  userId          String?
+  createdAt       DateTime          @default(now())
+
+  // Relaciones
+  inventoryItem   InventoryItem     @relation(fields: [inventoryItemId], references: [id])
+  
+  @@map("inventory_movements")
+}
+
+enum MovementType {
+  ENTRADA
+  SALIDA
+  AJUSTE
+  DEVOLUCION
+}
+
+// Sistema de fidelización
+model LoyaltyTransaction {
+  id          String              @id @default(cuid())
+  customerId  String
+  type        LoyaltyTransactionType
+  points      Int
+  description String?
+  reference   String?             // Referencia a venta, etc.
+  createdAt   DateTime            @default(now())
+
+  // Relaciones
+  customer    Customer            @relation(fields: [customerId], references: [id])
+  
+  @@map("loyalty_transactions")
+}
+
+enum LoyaltyTransactionType {
+  EARNED
+  REDEEMED
+  EXPIRED
+  ADJUSTED
+}
+
+// Notificaciones del sistema
+model Notification {
+  id          String            @id @default(cuid())
+  userId      String?
+  title       String
+  message     String
+  type        NotificationType
+  priority    NotificationPriority @default(NORMAL)
+  isRead      Boolean           @default(false)
+  actionUrl   String?
+  metadata    Json?
+  createdAt   DateTime          @default(now())
+  readAt      DateTime?
+
+  // Relaciones
+  user        User?             @relation(fields: [userId], references: [id])
+  
+  @@map("notifications")
+}
+
+enum NotificationType {
+  SISTEMA
+  VENTA
+  INVENTARIO
+  CLIENTE
+  RECORDATORIO
+  ALERTA
+}
+
+enum NotificationPriority {
+  BAJA
+  NORMAL
+  ALTA
+  CRITICA
+}
+
+// Configuración del sistema
+model SystemConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  category    String   @default("general")
+  isPublic    Boolean  @default(false) // Si es accesible desde el frontend
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("system_config")
+}
+
+// Auditoría del sistema
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String
+  entity      String
+  entityId    String?
+  oldValues   Json?
+  newValues   Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  // Relaciones
+  user        User?    @relation(fields: [userId], references: [id])
+  
+  @@map("audit_logs")
+}
+
+// Reportes programados
+model ScheduledReport {
+  id          String            @id @default(cuid())
+  name        String
+  type        String
+  frequency   ReportFrequency
+  recipients  String[]          // Array de emails
+  parameters  Json?
+  isActive    Boolean           @default(true)
+  lastRun     DateTime?
+  nextRun     DateTime
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  
+  @@map("scheduled_reports")
+}
+
+enum ReportFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
