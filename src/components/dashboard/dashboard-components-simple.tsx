@@ -300,7 +300,7 @@ export function QuickActionsSimple({ user }: { user?: any }) {
 
   return (
     <>
-    <Card className="bg-white shadow-sm">
+      <Card className="bg-white shadow-sm">
       <CardHeader>
         <CardTitle className="text-lg font-semibold flex items-center">
           <Plus className="h-5 w-5 mr-2" />
@@ -338,13 +338,13 @@ export function QuickActionsSimple({ user }: { user?: any }) {
           )}
         </div>
       </CardContent>
-    </Card>
+      </Card>
 
-    {/* Modal de configuración rápida */}
-    <QuickConfigModal
-      open={showConfigModal}
-      onOpenChange={setShowConfigModal}
-    />
-  </>
+      {/* Modal de configuración rápida - Temporalmente deshabilitado */}
+      {/* <QuickConfigModal
+        open={showConfigModal}
+        onOpenChange={setShowConfigModal}
+      /> */}
+    </>
   )
 }

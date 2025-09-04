@@ -79,10 +79,13 @@ La aplicación CRM Tinto del Mirador está completamente implementada y operativ
 ### ⚙️ **Configuración del Sistema**
 - ✅ Panel completo de configuración
 - ✅ Tabs: Resumen, Sistema, Usuario, Empresa, Notificaciones, Seguridad
-- ✅ **Personalización de temas con persistencia completa**
-  - ✅ Cambio de tema (claro/oscuro/automático) con aplicación inmediata
-  - ✅ Configuración de idioma, moneda y zona horaria
+- ✅ **Pestaña "Usuario" completamente estabilizada**
+  - ✅ Manejo robusto de hidratación del cliente
+  - ✅ Cambio de tema (claro/oscuro/automático) con sincronización mejorada
+  - ✅ Configuración de idioma, moneda y zona horaria con validación
   - ✅ Formato de fecha personalizable
+  - ✅ Manejo de errores en todos los controles de configuración
+  - ✅ Prevención de comportamiento errático en selectores
   - ✅ Todas las preferencias se mantienen después de refrescar la página
 - ✅ Gestión de roles y permisos
 - ✅ Configuración empresarial

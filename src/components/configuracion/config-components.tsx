@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTheme } from 'next-themes'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -443,18 +443,28 @@ interface UserSettingsProps {
 }
 
 export function UserSettings({ preferences, onPreferencesChange, isLoading }: UserSettingsProps) {
-  const { setTheme } = useTheme()
+  const { setTheme, theme: currentTheme } = useTheme()
+  const [isClient, setIsClient] = useState(false)
 
-  // Función para manejar cambios de tema con sincronización inmediata
-  const handleThemeChange = (newTheme: 'light' | 'dark' | 'auto') => {
-    // Actualizar el tema inmediatamente en next-themes
-    setTheme(newTheme)
+  // Efecto para manejar la hidratación del cliente
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
-    // Actualizar las preferencias del usuario
-    onPreferencesChange({ theme: newTheme })
+  // Función para manejar cambios de tema con sincronización mejorada
+  const handleThemeChange = useCallback((newTheme: 'light' | 'dark' | 'auto') => {
+    try {
+      // Actualizar las preferencias del usuario primero
+      onPreferencesChange({ theme: newTheme })
 
-    console.log('🎨 Theme changed to:', newTheme)
-  }
+      // Luego actualizar el tema en next-themes
+      setTheme(newTheme)
+
+      console.log('🎨 Theme changed to:', newTheme)
+    } catch (error) {
+      console.error('Error changing theme:', error)
+    }
+  }, [setTheme, onPreferencesChange])
   if (isLoading) {
     return (
       <Card className="bg-white shadow-sm">
@@ -493,29 +503,39 @@ export function UserSettings({ preferences, onPreferencesChange, isLoading }: Us
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="theme">Tema</Label>
-              <Select
-                value={preferences.theme}
-                onValueChange={(value) => handleThemeChange(value as 'light' | 'dark' | 'auto')}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="light">Claro</SelectItem>
-                  <SelectItem value="dark">Oscuro</SelectItem>
-                  <SelectItem value="auto">Automático</SelectItem>
-                </SelectContent>
-              </Select>
+              {isClient ? (
+                <Select
+                  value={preferences.theme}
+                  onValueChange={(value) => handleThemeChange(value as 'light' | 'dark' | 'auto')}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar tema" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Claro</SelectItem>
+                    <SelectItem value="dark">Oscuro</SelectItem>
+                    <SelectItem value="auto">Automático</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="h-10 bg-gray-100 rounded-md animate-pulse" />
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="language">Idioma</Label>
               <Select
                 value={preferences.language}
-                onValueChange={(value) => onPreferencesChange({ language: value as any })}
+                onValueChange={(value) => {
+                  try {
+                    onPreferencesChange({ language: value as any })
+                  } catch (error) {
+                    console.error('Error changing language:', error)
+                  }
+                }}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Seleccionar idioma" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="es">Español</SelectItem>
@@ -541,7 +561,13 @@ export function UserSettings({ preferences, onPreferencesChange, isLoading }: Us
               <Label htmlFor="currency">Moneda</Label>
               <Select
                 value={preferences.currency}
-                onValueChange={(value) => onPreferencesChange({ currency: value as any })}
+                onValueChange={(value) => {
+                  try {
+                    onPreferencesChange({ currency: value as any })
+                  } catch (error) {
+                    console.error('Error changing currency:', error)
+                  }
+                }}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -558,7 +584,13 @@ export function UserSettings({ preferences, onPreferencesChange, isLoading }: Us
               <Label htmlFor="dateFormat">Formato de Fecha</Label>
               <Select
                 value={preferences.dateFormat}
-                onValueChange={(value) => onPreferencesChange({ dateFormat: value as any })}
+                onValueChange={(value) => {
+                  try {
+                    onPreferencesChange({ dateFormat: value as any })
+                  } catch (error) {
+                    console.error('Error changing date format:', error)
+                  }
+                }}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -577,7 +609,13 @@ export function UserSettings({ preferences, onPreferencesChange, isLoading }: Us
             <Input
               id="timezone"
               value={preferences.timezone}
-              onChange={(e) => onPreferencesChange({ timezone: e.target.value })}
+              onChange={(e) => {
+                try {
+                  onPreferencesChange({ timezone: e.target.value })
+                } catch (error) {
+                  console.error('Error changing timezone:', error)
+                }
+              }}
               placeholder="America/Bogota"
             />
           </div>
@@ -598,9 +636,15 @@ export function UserSettings({ preferences, onPreferencesChange, isLoading }: Us
               <Label htmlFor="layout">Layout</Label>
               <Select
                 value={preferences.dashboard.layout}
-                onValueChange={(value) => onPreferencesChange({
-                  dashboard: { ...preferences.dashboard, layout: value as any }
-                })}
+                onValueChange={(value) => {
+                  try {
+                    onPreferencesChange({
+                      dashboard: { ...preferences.dashboard, layout: value as any }
+                    })
+                  } catch (error) {
+                    console.error('Error changing dashboard layout:', error)
+                  }
+                }}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -619,12 +663,23 @@ export function UserSettings({ preferences, onPreferencesChange, isLoading }: Us
                 id="refreshInterval"
                 type="number"
                 value={preferences.dashboard.refreshInterval / 1000}
-                onChange={(e) => onPreferencesChange({
-                  dashboard: {
-                    ...preferences.dashboard,
-                    refreshInterval: parseInt(e.target.value) * 1000
+                onChange={(e) => {
+                  try {
+                    const value = parseInt(e.target.value)
+                    if (isNaN(value) || value < 30 || value > 3600) {
+                      console.warn('Invalid refresh interval value:', e.target.value)
+                      return
+                    }
+                    onPreferencesChange({
+                      dashboard: {
+                        ...preferences.dashboard,
+                        refreshInterval: value * 1000
+                      }
+                    })
+                  } catch (error) {
+                    console.error('Error changing refresh interval:', error)
                   }
-                })}
+                }}
                 min="30"
                 max="3600"
               />
