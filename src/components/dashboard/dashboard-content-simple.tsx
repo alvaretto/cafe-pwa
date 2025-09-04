@@ -7,11 +7,11 @@ import { MetricsCardsSimple } from './metrics-cards-simple'
 import {
   SalesChartSimple,
   RecentActivitySimple,
-  InventoryAlertsSimple,
   AIInsightsSimple,
   QuickActionsSimple,
   NotificationCenterSimple
 } from './dashboard-components-simple'
+import { InventoryAlerts } from './inventory-alerts'
 
 interface DashboardContentProps {
   user: User
@@ -46,7 +46,7 @@ interface DashboardMetrics {
 
 export function DashboardContentSimple({ user }: DashboardContentProps) {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false) // Forzar false para desarrollo
 
   useEffect(() => {
     loadDashboardData()
@@ -84,10 +84,10 @@ export function DashboardContentSimple({ user }: DashboardContentProps) {
         },
       }
 
-      // Simular delay de red
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
+      // Sin delay para desarrollo - carga inmediata
+      console.log('🔧 Dashboard: Cargando datos...')
       setMetrics(mockMetrics)
+      console.log('🔧 Dashboard: Datos cargados, cambiando isLoading a false')
     } catch (error) {
       console.error('Error loading dashboard data:', error)
     } finally {
@@ -128,8 +128,8 @@ export function DashboardContentSimple({ user }: DashboardContentProps) {
             {/* Centro de notificaciones */}
             <NotificationCenterSimple />
             
-            {/* Alertas de inventario */}
-            <InventoryAlertsSimple isLoading={isLoading} />
+            {/* Alertas de inventario - Fixed */}
+            <InventoryAlerts isLoading={isLoading} />
             
             {/* Insights de IA */}
             <AIInsightsSimple isLoading={isLoading} />

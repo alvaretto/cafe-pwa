@@ -1,17 +1,23 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { AlertTriangle, Package, ShoppingCart } from 'lucide-react'
+import { AlertTriangle, Package, ShoppingCart, Eye } from 'lucide-react'
 import { formatNumber } from '@/lib/utils'
+import { PurchaseOrderModal } from './purchase-order-modal'
+import { useRouter } from 'next/navigation'
 
 interface InventoryAlertsProps {
   isLoading: boolean
 }
 
 export function InventoryAlerts({ isLoading }: InventoryAlertsProps) {
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
+  const router = useRouter()
+
   // Datos simulados de alertas de inventario
   const alerts = [
     {
@@ -62,6 +68,38 @@ export function InventoryAlerts({ isLoading }: InventoryAlertsProps) {
       return `${(grams / 1000).toFixed(1)} kg`
     }
     return `${grams} g`
+  }
+
+  const handleGeneratePurchaseOrder = async (orderData: {
+    items: any[]
+    totalAmount: number
+    notes: string
+    expectedDelivery: string
+  }) => {
+    try {
+      console.log('🛒 Generando orden de compra:', orderData)
+
+      // Simular procesamiento
+      await new Promise(resolve => setTimeout(resolve, 1500))
+
+      // Mostrar confirmación
+      alert(`✅ Orden de compra generada exitosamente!\n\n` +
+            `📦 ${orderData.items.length} productos\n` +
+            `💰 Total: ${new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(orderData.totalAmount)}\n` +
+            `📅 Entrega esperada: ${new Date(orderData.expectedDelivery).toLocaleDateString('es-CO')}\n\n` +
+            `La orden ha sido enviada a los proveedores correspondientes.`)
+
+      // Opcional: Redirigir al módulo de compras
+      // router.push('/compras')
+
+    } catch (error) {
+      console.error('Error al generar orden:', error)
+      alert('❌ Error al generar la orden de compra')
+    }
+  }
+
+  const handleViewInventory = () => {
+    router.push('/inventario')
   }
 
   if (isLoading) {
@@ -169,14 +207,33 @@ export function InventoryAlerts({ isLoading }: InventoryAlertsProps) {
         </div>
         
         <div className="mt-4 pt-4 border-t space-y-2">
-          <Button size="sm" className="w-full">
+          <Button
+            size="sm"
+            className="w-full bg-amber-600 hover:bg-amber-700"
+            onClick={() => setIsPurchaseModalOpen(true)}
+            disabled={alerts.length === 0}
+          >
             <ShoppingCart className="h-4 w-4 mr-2" />
             Generar Orden de Compra
           </Button>
-          <Button variant="outline" size="sm" className="w-full">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={handleViewInventory}
+          >
+            <Eye className="h-4 w-4 mr-2" />
             Ver Todo el Inventario
           </Button>
         </div>
+
+        {/* Modal de orden de compra */}
+        <PurchaseOrderModal
+          isOpen={isPurchaseModalOpen}
+          onClose={() => setIsPurchaseModalOpen(false)}
+          alerts={alerts}
+          onGenerateOrder={handleGeneratePurchaseOrder}
+        />
       </CardContent>
     </Card>
   )
