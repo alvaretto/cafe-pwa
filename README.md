@@ -79,13 +79,17 @@ La aplicación CRM Tinto del Mirador está completamente implementada y operativ
 ### ⚙️ **Configuración del Sistema**
 - ✅ Panel completo de configuración
 - ✅ Tabs: Resumen, Sistema, Usuario, Empresa, Notificaciones, Seguridad
-- ✅ **Pestaña "Usuario" completamente estabilizada**
-  - ✅ Manejo robusto de hidratación del cliente
-  - ✅ Cambio de tema (claro/oscuro/automático) con sincronización mejorada
+- ✅ **Pestaña "Usuario" > Sección "Apariencia" > Control "Tema" completamente optimizado**
+  - ✅ **Selector de tema "Oscuro" funcionando sin comportamiento errático**
+  - ✅ Manejo robusto de hidratación cliente-servidor
+  - ✅ Sincronización mejorada entre next-themes y preferencias de usuario
+  - ✅ Debounce implementado para prevenir cambios múltiples simultáneos
+  - ✅ Estados de carga visual con indicadores de progreso
+  - ✅ Manejo de errores con reversión automática en caso de fallo
+  - ✅ Transiciones CSS suaves para cambios de tema
+  - ✅ Prevención de flash de contenido no estilizado (FOUC)
   - ✅ Configuración de idioma, moneda y zona horaria con validación
   - ✅ Formato de fecha personalizable
-  - ✅ Manejo de errores en todos los controles de configuración
-  - ✅ Prevención de comportamiento errático en selectores
   - ✅ Todas las preferencias se mantienen después de refrescar la página
 - ✅ Gestión de roles y permisos
 - ✅ Configuración empresarial
@@ -333,6 +337,51 @@ npm start
 3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
+
+## 🚀 Próximos Pasos para Optimización
+
+### 🔧 **Optimizaciones de Rendimiento Recomendadas**
+- **Implementar lazy loading** para componentes pesados del dashboard
+- **Optimizar bundle splitting** para reducir el tamaño inicial de carga
+- **Implementar Service Workers** para cacheo inteligente de recursos
+- **Configurar compresión gzip/brotli** en el servidor de producción
+- **Optimizar imágenes** con next/image y formatos modernos (WebP, AVIF)
+- **Implementar virtual scrolling** para listas largas de productos/clientes
+
+### 📈 **Mejoras de SEO y Analytics**
+- **Configurar Google Analytics 4** para seguimiento de métricas de negocio
+- **Implementar meta tags dinámicos** para mejor indexación
+- **Configurar sitemap.xml** automático para páginas públicas
+- **Implementar structured data** para productos y servicios
+- **Optimizar Core Web Vitals** (LCP, FID, CLS)
+
+### 🔍 **Configuración de Monitoreo y Logging**
+- **Integrar Sentry** para monitoreo de errores en producción
+- **Configurar logs estructurados** con Winston o similar
+- **Implementar health checks** para servicios críticos
+- **Configurar alertas automáticas** para errores críticos
+- **Dashboard de métricas** con Grafana o similar
+
+### 🧪 **Ampliación de Cobertura de Tests**
+- **Tests de integración** para flujos críticos de ventas
+- **Tests E2E** con Playwright para casos de uso completos
+- **Tests de rendimiento** con Lighthouse CI
+- **Tests de accesibilidad** automatizados
+- **Cobertura de código** objetivo: >90%
+
+### 🔐 **Mejoras de Seguridad**
+- **Implementar rate limiting** en endpoints críticos
+- **Configurar CSP headers** para prevenir XSS
+- **Auditoría de dependencias** automatizada
+- **Implementar 2FA** para usuarios administradores
+- **Logs de auditoría** para acciones críticas
+
+### 🌐 **Escalabilidad y Infraestructura**
+- **Configurar CDN** para assets estáticos
+- **Implementar base de datos real** (PostgreSQL/MongoDB)
+- **Configurar Redis** para cacheo de sesiones
+- **Implementar microservicios** para módulos independientes
+- **Configurar CI/CD pipeline** automatizado
 
 ## 📄 Licencia
 

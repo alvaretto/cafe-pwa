@@ -338,13 +338,13 @@ export function QuickActionsSimple({ user }: { user?: any }) {
           )}
         </div>
       </CardContent>
-      </Card>
+    </Card>
 
-      {/* Modal de configuración rápida - Temporalmente deshabilitado */}
-      {/* <QuickConfigModal
-        open={showConfigModal}
-        onOpenChange={setShowConfigModal}
-      /> */}
-    </>
-  )
+    {/* Modal de configuración rápida */}
+    <QuickConfigModal
+      open={showConfigModal}
+      onOpenChange={setShowConfigModal}
+    />
+  </>
+)
 }

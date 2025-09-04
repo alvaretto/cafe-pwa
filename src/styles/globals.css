@@ -70,6 +70,35 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 94.1%;
   }
+
+  /* Mejoras específicas para transiciones de tema */
+  * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+
+  /* Prevenir flash de contenido no estilizado en tema oscuro */
+  html {
+    color-scheme: light dark;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  /* Estilos específicos para elementos en tema oscuro */
+  .dark .bg-white {
+    @apply bg-gray-900;
+  }
+
+  .dark .text-gray-900 {
+    @apply text-gray-100;
+  }
+
+  .dark .border-gray-200 {
+    @apply border-gray-700;
+  }
 }
 
 @layer base {

@@ -443,28 +443,61 @@ interface UserSettingsProps {
 }
 
 export function UserSettings({ preferences, onPreferencesChange, isLoading }: UserSettingsProps) {
-  const { setTheme, theme: currentTheme } = useTheme()
+  const { setTheme, theme: currentTheme, resolvedTheme } = useTheme()
   const [isClient, setIsClient] = useState(false)
+  const [isThemeChanging, setIsThemeChanging] = useState(false)
 
   // Efecto para manejar la hidratación del cliente
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  // Función para manejar cambios de tema con sincronización mejorada
+  // Función para manejar cambios de tema con sincronización mejorada y debounce
   const handleThemeChange = useCallback((newTheme: 'light' | 'dark' | 'auto') => {
-    try {
-      // Actualizar las preferencias del usuario primero
-      onPreferencesChange({ theme: newTheme })
+    if (isThemeChanging) {
+      console.log('⏳ Theme change already in progress, ignoring request')
+      return
+    }
 
-      // Luego actualizar el tema en next-themes
+    try {
+      setIsThemeChanging(true)
+      console.log('🎨 Starting theme change to:', newTheme, {
+        currentTheme,
+        resolvedTheme,
+        previousPreference: preferences?.theme
+      })
+
+      // Aplicar el tema inmediatamente en next-themes para feedback visual instantáneo
       setTheme(newTheme)
 
-      console.log('🎨 Theme changed to:', newTheme)
+      // Usar setTimeout para evitar conflictos con la sincronización automática
+      setTimeout(() => {
+        try {
+          // Actualizar las preferencias del usuario después del cambio visual
+          onPreferencesChange({ theme: newTheme })
+          console.log('✅ Theme change completed successfully:', {
+            newTheme,
+            currentTheme,
+            resolvedTheme
+          })
+        } catch (error) {
+          console.error('Error updating preferences after theme change:', error)
+          // Revertir el tema si falla la actualización de preferencias
+          const fallbackTheme = preferences?.theme || 'light'
+          setTheme(fallbackTheme)
+          console.warn('🔄 Reverted theme to:', fallbackTheme)
+        } finally {
+          setIsThemeChanging(false)
+        }
+      }, 150) // Aumentado a 150ms para mejor estabilidad
+
     } catch (error) {
       console.error('Error changing theme:', error)
+      setIsThemeChanging(false)
+      // Mostrar feedback visual del error
+      console.warn('⚠️ Theme change failed, reverting to previous theme')
     }
-  }, [setTheme, onPreferencesChange])
+  }, [setTheme, onPreferencesChange, preferences?.theme, currentTheme, resolvedTheme, isThemeChanging])
   if (isLoading) {
     return (
       <Card className="bg-white shadow-sm">
@@ -502,23 +535,50 @@ export function UserSettings({ preferences, onPreferencesChange, isLoading }: Us
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="theme">Tema</Label>
+              <Label htmlFor="theme" className="flex items-center gap-2">
+                Tema
+                {isThemeChanging && (
+                  <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                )}
+              </Label>
               {isClient ? (
                 <Select
                   value={preferences.theme}
                   onValueChange={(value) => handleThemeChange(value as 'light' | 'dark' | 'auto')}
+                  disabled={isThemeChanging}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={isThemeChanging ? 'opacity-50 cursor-not-allowed' : ''}>
                     <SelectValue placeholder="Seleccionar tema" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="light">Claro</SelectItem>
-                    <SelectItem value="dark">Oscuro</SelectItem>
-                    <SelectItem value="auto">Automático</SelectItem>
+                    <SelectItem value="light">
+                      <div className="flex items-center gap-2">
+                        <div className="h-3 w-3 rounded-full bg-white border border-gray-300" />
+                        Claro
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="dark">
+                      <div className="flex items-center gap-2">
+                        <div className="h-3 w-3 rounded-full bg-gray-800" />
+                        Oscuro
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="auto">
+                      <div className="flex items-center gap-2">
+                        <div className="h-3 w-3 rounded-full bg-gradient-to-r from-white to-gray-800 border border-gray-300" />
+                        Automático
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               ) : (
-                <div className="h-10 bg-gray-100 rounded-md animate-pulse" />
+                <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-md animate-pulse" />
+              )}
+              {/* Indicador del tema actual resuelto */}
+              {isClient && resolvedTheme && (
+                <p className="text-xs text-muted-foreground">
+                  Tema activo: <span className="font-medium capitalize">{resolvedTheme}</span>
+                </p>
               )}
             </div>
 
