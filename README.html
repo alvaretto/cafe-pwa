@@ -569,7 +569,7 @@ nuevo:</p>
 DATABASE_URL=&quot;postgresql://username:password@localhost:5432/tinto_del_mirador&quot;
 
 # NextAuth.js
-NEXTAUTH_URL=&quot;http://localhost:3002&quot;
+NEXTAUTH_URL=&quot;http://localhost:3001&quot;
 NEXTAUTH_SECRET=&quot;tu-secret-super-seguro-aqui&quot;
 
 # Firebase (opcional)
@@ -581,19 +581,18 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=&quot;tu-proyecto-id&quot;
 GEMINI_API_KEY=&quot;tu-gemini-api-key&quot;
 
 # App Configuration
-NEXT_PUBLIC_APP_URL=&quot;http://localhost:3002&quot;
+NEXT_PUBLIC_APP_URL=&quot;http://localhost:3001&quot;
 NEXT_PUBLIC_APP_NAME=&quot;Tinto del Mirador CRM&quot;</code></pre>
 </div>
 <div id="ejecutar-en-modo-desarrollo" class="section level3">
 <h3>4. Ejecutar en modo desarrollo</h3>
-<pre class="bash"><code># Ejecutar en puerto 3002
-PORT=3002 npm run dev
+<pre class="bash"><code># Ejecutar en puerto fijo configurado (recomendado)
+npm run dev
 
-# O usar el puerto por defecto (3000)
-npm run dev</code></pre>
-<p>La aplicación estará disponible en: - <strong>Puerto 3002</strong>:
-<code>http://localhost:3002</code> (recomendado) - <strong>Puerto
-3000</strong>: <code>http://localhost:3000</code> (por defecto)</p>
+# O usar un puerto personalizado (opcional)
+PORT=3002 npm run dev</code></pre>
+<p>La aplicación estará disponible en: - <strong>Puerto 3001</strong>:
+<code>http://localhost:3001</code> (puerto fijo configurado - recomendado) - <strong>Puerto personalizado</strong>: <code>http://localhost:[PUERTO]</code> (si usas PORT=XXXX)</p>
 </div>
 <div id="construir-para-producción" class="section level3">
 <h3>5. Construir para producción</h3>

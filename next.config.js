@@ -195,6 +195,8 @@ const nextConfig = {
   },
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
+    // Puerto fijo configurado para la aplicación
+    NEXT_PUBLIC_APP_PORT: '3001',
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {

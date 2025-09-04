@@ -4,9 +4,9 @@
   "description": "CRM integral para emprendimiento de venta de café - Tinto del Mirador",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3001",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
@@ -18,7 +18,11 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "port:check": "node scripts/check-port.js",
+    "port:info": "node port.config.js",
+    "port:kill": "kill -9 $(lsof -ti:3001) 2>/dev/null || echo 'Puerto 3001 no está en uso'",
+    "dev:safe": "npm run port:check && npm run dev"
   },
   "dependencies": {
     "@next/bundle-analyzer": "^14.0.4",
