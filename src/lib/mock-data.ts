@@ -77,8 +77,8 @@ export const MOCK_PRODUCTS: Product[] = [
     cost: 15000,
     margin: 66.67,
     isActive: true,
-    stock: 2500, // gramos
-    minStock: 500,
+    stock: 2268, // gramos (5.0 lb)
+    minStock: 454, // gramos (1.0 lb)
     image: '/images/arabica-premium.jpg',
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-20'),
@@ -98,8 +98,8 @@ export const MOCK_PRODUCTS: Product[] = [
     cost: 12000,
     margin: 66.67,
     isActive: true,
-    stock: 1800,
-    minStock: 400,
+    stock: 1814, // gramos (4.0 lb)
+    minStock: 227, // gramos (0.5 lb)
     image: '/images/robusta-intenso.jpg',
     createdAt: new Date('2024-01-10'),
     updatedAt: new Date('2024-01-18'),
@@ -119,8 +119,8 @@ export const MOCK_PRODUCTS: Product[] = [
     cost: 18000,
     margin: 66.67,
     isActive: true,
-    stock: 3200,
-    minStock: 600,
+    stock: 4990, // gramos (11.0 lb)
+    minStock: 907, // gramos (2.0 lb)
     image: '/images/mezcla-mirador.jpg',
     createdAt: new Date('2024-01-05'),
     updatedAt: new Date('2024-01-22'),
@@ -140,8 +140,8 @@ export const MOCK_PRODUCTS: Product[] = [
     cost: 22000,
     margin: 59.09,
     isActive: true,
-    stock: 1500,
-    minStock: 300,
+    stock: 136, // gramos (0.3 lb) - Stock crítico
+    minStock: 454, // gramos (1.0 lb)
     image: '/images/organico-certificado.jpg',
     createdAt: new Date('2024-01-12'),
     updatedAt: new Date('2024-01-25'),

@@ -32,6 +32,7 @@ import {
   Calendar
 } from 'lucide-react'
 import { Product, InventoryMovement, StockAlert, Supplier } from '@/lib/mock-data'
+import { formatCurrency, formatDate, formatDateTime, formatDualStock, formatCompactDualStock } from '@/lib/utils'
 
 // Header de inventario
 interface InventoryHeaderProps {
@@ -102,7 +103,7 @@ export function InventoryStats({ stats, isLoading }: InventoryStatsProps) {
     {
       title: 'Valor Total',
       value: formatCurrency(stats.totalValue),
-      subtitle: `${stats.totalStock.toLocaleString()}g en stock`,
+      subtitle: `${formatDualStock(stats.totalStock)} en stock`,
       icon: DollarSign,
       color: 'text-green-600',
       bgColor: 'bg-green-100',
@@ -299,10 +300,10 @@ export function StockOverview({ products, isLoading, onStockAdjustment }: StockO
                     <div className="flex justify-between text-sm">
                       <span>Stock actual</span>
                       <span className={`font-medium ${
-                        isOutOfStock ? 'text-red-600' : 
+                        isOutOfStock ? 'text-red-600' :
                         isLowStock ? 'text-orange-600' : 'text-green-600'
                       }`}>
-                        {product.stock}g
+                        {formatDualStock(product.stock)}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -315,8 +316,8 @@ export function StockOverview({ products, isLoading, onStockAdjustment }: StockO
                       />
                     </div>
                     <div className="flex justify-between text-xs text-gray-500">
-                      <span>Mínimo: {product.minStock}g</span>
-                      <span>Óptimo: {product.minStock * 2}g</span>
+                      <span>Mínimo: {formatCompactDualStock(product.minStock)}</span>
+                      <span>Óptimo: {formatCompactDualStock(product.minStock * 2)}</span>
                     </div>
                   </div>
 
@@ -361,7 +362,7 @@ export function StockOverview({ products, isLoading, onStockAdjustment }: StockO
             <div className="space-y-4 py-4">
               <div>
                 <h4 className="font-medium text-gray-900">{selectedProduct.name}</h4>
-                <p className="text-sm text-gray-600">Stock actual: {selectedProduct.stock}g</p>
+                <p className="text-sm text-gray-600">Stock actual: {formatDualStock(selectedProduct.stock)}</p>
               </div>
               
               <div className="space-y-2">
@@ -476,8 +477,8 @@ export function AlertsPanel({ alerts, isLoading, onResolveAlert }: AlertsPanelPr
                 <div className="flex-1">
                   <h4 className="font-semibold text-gray-900">{alert.productName}</h4>
                   <p className="text-sm text-gray-600 mt-1">
-                    Stock actual: <span className="font-medium">{alert.currentStock}g</span> •
-                    Mínimo requerido: <span className="font-medium">{alert.minStock}g</span>
+                    Stock actual: <span className="font-medium">{formatDualStock(alert.currentStock)}</span> •
+                    Mínimo requerido: <span className="font-medium">{formatDualStock(alert.minStock)}</span>
                   </p>
                   <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
                     <span>Severidad: {alert.severity.toUpperCase()}</span>
@@ -571,7 +572,7 @@ export function MovementsHistory({ movements, isLoading }: MovementsHistoryProps
                     <div className={`font-semibold ${
                       movement.quantity > 0 ? 'text-green-600' : 'text-red-600'
                     }`}>
-                      {movement.quantity > 0 ? '+' : ''}{movement.quantity}g
+                      {movement.quantity > 0 ? '+' : ''}{formatDualStock(Math.abs(movement.quantity))}
                     </div>
                     {movement.cost && (
                       <div className="text-xs text-gray-500">
@@ -728,11 +729,11 @@ export function RestockSuggestions({ suggestions, isLoading, onCreatePurchaseOrd
                   <div className="grid grid-cols-3 gap-4 mt-2 text-sm">
                     <div>
                       <span className="text-gray-500">Stock actual:</span>
-                      <div className="font-medium text-red-600">{suggestion.currentStock}g</div>
+                      <div className="font-medium text-red-600">{formatCompactDualStock(suggestion.currentStock)}</div>
                     </div>
                     <div>
                       <span className="text-gray-500">Stock mínimo:</span>
-                      <div className="font-medium">{suggestion.minStock}g</div>
+                      <div className="font-medium">{formatCompactDualStock(suggestion.minStock)}</div>
                     </div>
                     <div>
                       <span className="text-gray-500">Urgencia:</span>

@@ -133,6 +133,50 @@ export function convertToGrams(amount: number, unit: 'GRAMO' | 'MEDIA_LIBRA' | '
 }
 
 /**
+ * Convierte gramos a libras con precisión decimal
+ */
+export function convertGramsToPounds(grams: number): number {
+  return grams / 453.592
+}
+
+/**
+ * Convierte libras a gramos con precisión decimal
+ */
+export function convertPoundsToGrams(pounds: number): number {
+  return pounds * 453.592
+}
+
+/**
+ * Formatea el stock mostrando tanto gramos como libras
+ * Ejemplo: "2,268 g (5.0 lb)" o "453 g (1.0 lb)"
+ */
+export function formatDualStock(grams: number): string {
+  const pounds = convertGramsToPounds(grams)
+  const formattedGrams = formatNumber(Math.round(grams))
+  const formattedPounds = pounds.toFixed(1)
+
+  return `${formattedGrams} g (${formattedPounds} lb)`
+}
+
+/**
+ * Formatea el stock de manera compacta para espacios reducidos
+ * Ejemplo: "2.3k g (5.0 lb)" para números grandes
+ */
+export function formatCompactDualStock(grams: number): string {
+  const pounds = convertGramsToPounds(grams)
+  const formattedPounds = pounds.toFixed(1)
+
+  let formattedGrams: string
+  if (grams >= 1000) {
+    formattedGrams = `${(grams / 1000).toFixed(1)}k g`
+  } else {
+    formattedGrams = `${Math.round(grams)} g`
+  }
+
+  return `${formattedGrams} (${formattedPounds} lb)`
+}
+
+/**
  * Obtiene el nombre de la unidad en español
  */
 export function getUnitName(unit: 'GRAMO' | 'MEDIA_LIBRA' | 'LIBRA' | 'KILOGRAMO', plural: boolean = false): string {
