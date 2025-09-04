@@ -22,7 +22,8 @@ import {
   Check,
   Clock
 } from 'lucide-react'
-import { Expense, ExpenseCategory } from '@/lib/mock-data'
+import { Expense } from '@/lib/mock-data'
+import { ExpenseCategory } from '@/types'
 
 interface ExpenseModalProps {
   isOpen: boolean
@@ -45,7 +46,7 @@ export function ExpenseModal({
   onDelete,
   userRole,
 }: ExpenseModalProps) {
-  const [formData, setFormData] = useState<Partial<Expense>>({
+  const [formData, setFormData] = useState<any>({
     categoryId: '',
     title: '',
     description: '',
@@ -88,17 +89,17 @@ export function ExpenseModal({
   }, [expense, mode, isOpen])
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData((prev: any) => ({ ...prev, [field]: value }))
     
     // Limpiar error del campo
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }))
+      setErrors((prev: any) => ({ ...prev, [field]: '' }))
     }
   }
 
   const handleAddTag = () => {
     if (tagInput.trim() && !formData.tags?.includes(tagInput.trim())) {
-      setFormData(prev => ({
+      setFormData((prev: any) => ({
         ...prev,
         tags: [...(prev.tags || []), tagInput.trim()]
       }))
@@ -107,9 +108,9 @@ export function ExpenseModal({
   }
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
-      tags: prev.tags?.filter(tag => tag !== tagToRemove) || []
+      tags: prev.tags?.filter((tag: string) => tag !== tagToRemove) || []
     }))
   }
 
@@ -435,7 +436,7 @@ export function ExpenseModal({
             )}
 
             <div className="flex flex-wrap gap-2">
-              {formData.tags?.map((tag, index) => (
+              {formData.tags?.map((tag: string, index: number) => (
                 <Badge key={index} variant="secondary" className="flex items-center space-x-1">
                   <span>{tag}</span>
                   {!isReadOnly && (

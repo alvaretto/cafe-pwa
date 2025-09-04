@@ -59,17 +59,17 @@ export class DeploymentAuditLogger {
           userId: data.userId,
           status: data.status.toUpperCase() as any,
           platform: data.platform.toUpperCase() as any,
-          configId: data.configId,
-          commitHash: data.commitHash,
+          configId: data.configId || null,
+          commitHash: data.commitHash || null,
           branch: data.branch || 'main',
-          deploymentUrl: data.deploymentUrl,
-          buildId: data.buildId,
+          deploymentUrl: data.deploymentUrl || null,
+          buildId: data.buildId || null,
           logs: JSON.stringify(data.logs || []),
           validations: JSON.stringify(data.validations || []),
           steps: JSON.stringify(data.steps || []),
           error: data.error ? JSON.stringify(data.error) : null,
           metadata: JSON.stringify(data.metadata || {})
-        }
+        } as any
       })
 
       return deploymentLog.id
@@ -172,7 +172,7 @@ export class DeploymentAuditLogger {
         userId: log.userId,
         status: log.status.toLowerCase() as DeploymentStatus,
         platform: log.platform.toLowerCase() as HostingPlatform,
-        configId: log.configId || undefined,
+        configId: log.configId || '',
         startedAt: log.startedAt,
         completedAt: log.completedAt || undefined,
         duration: log.duration || undefined,
@@ -185,7 +185,7 @@ export class DeploymentAuditLogger {
         logs: JSON.parse(log.logs),
         error: log.error ? JSON.parse(log.error) : undefined,
         metadata: JSON.parse(log.metadata)
-      }))
+      }) as any)
     } catch (error) {
       console.error('Error fetching user deployment logs:', error)
       return []
@@ -233,7 +233,7 @@ export class DeploymentAuditLogger {
         userId: log.userId,
         status: log.status.toLowerCase() as DeploymentStatus,
         platform: log.platform.toLowerCase() as HostingPlatform,
-        configId: log.configId || undefined,
+        configId: log.configId || '',
         startedAt: log.startedAt,
         completedAt: log.completedAt || undefined,
         duration: log.duration || undefined,
@@ -246,7 +246,7 @@ export class DeploymentAuditLogger {
         logs: JSON.parse(log.logs),
         error: log.error ? JSON.parse(log.error) : undefined,
         metadata: JSON.parse(log.metadata)
-      }))
+      }) as any)
     } catch (error) {
       console.error('Error fetching all deployment logs:', error)
       return []
@@ -318,10 +318,10 @@ export class DeploymentAuditLogger {
         successful,
         failed,
         averageDuration: Math.round(averageDuration),
-        lastDeployment: allLogs[0]?.createdAt,
+        lastDeployment: allLogs[0]?.createdAt || undefined,
         deploymentsByPlatform,
         deploymentsByStatus
-      }
+      } as any
     } catch (error) {
       console.error('Error fetching deployment stats:', error)
       return {
@@ -383,7 +383,7 @@ export class DeploymentAuditLogger {
         userId: log.userId,
         status: log.status.toLowerCase() as DeploymentStatus,
         platform: log.platform.toLowerCase() as HostingPlatform,
-        configId: log.configId || undefined,
+        configId: log.configId || '',
         startedAt: log.startedAt,
         completedAt: log.completedAt || undefined,
         duration: log.duration || undefined,
@@ -396,7 +396,7 @@ export class DeploymentAuditLogger {
         logs: JSON.parse(log.logs),
         error: log.error ? JSON.parse(log.error) : undefined,
         metadata: JSON.parse(log.metadata)
-      }
+      } as any
     } catch (error) {
       console.error('Error fetching deployment log by ID:', error)
       return null
@@ -440,11 +440,11 @@ export function useDeploymentAudit(userId: string) {
 
     return await DeploymentAuditLogger.updateLog(id, {
       status,
-      deploymentUrl,
+      deploymentUrl: deploymentUrl || undefined,
       error,
       completedAt,
       duration
-    })
+    } as any)
   }
 
   return {

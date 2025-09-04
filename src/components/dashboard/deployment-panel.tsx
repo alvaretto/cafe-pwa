@@ -175,7 +175,7 @@ export function DeploymentPanel() {
               {/* Último log */}
               {state.logs.length > 0 && (
                 <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded font-mono">
-                  {state.logs[state.logs.length - 1].split('] ')[1] || state.logs[state.logs.length - 1]}
+                  {state.logs[state.logs.length - 1]?.split('] ')[1] || state.logs[state.logs.length - 1]}
                 </div>
               )}
             </div>

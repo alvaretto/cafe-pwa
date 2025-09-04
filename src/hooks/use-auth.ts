@@ -8,10 +8,10 @@ export function useAuth() {
 
   const user: User | null = session?.user ? {
     id: session.user.id,
-    email: session.user.email,
-    name: session.user.name,
-    image: session.user.image,
-    role: session.user.role,
+    email: session.user.email || '',
+    name: session.user.name || 'Usuario',
+    image: session.user.image || '',
+    role: session.user.role as any,
     isActive: true, // Asumimos que está activo si tiene sesión
     lastLogin: new Date(), // Placeholder
     emailVerified: new Date(), // Placeholder

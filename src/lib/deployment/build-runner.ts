@@ -4,6 +4,8 @@
  */
 
 import { DeploymentStep, CLICommand, CLIResult, BundleAnalysis } from '@/types/deployment'
+import path from 'path'
+import { promises as fs } from 'fs'
 
 // Detectar si estamos en el cliente
 const isClient = typeof window !== 'undefined'
@@ -24,6 +26,7 @@ interface BuildProgressCallbacks {
  */
 class StreamingCommandExecutor {
   private killed = false
+  private currentProcess: any = null
 
   async execute(
     command: CLICommand,
@@ -103,11 +106,13 @@ class StreamingCommandExecutor {
       let stderr = ''
 
       return new Promise((resolve) => {
-        const process = spawn(command.command, command.args, {
+        const childProcess = spawn(command.command, command.args, {
           cwd: command.cwd,
           env: { ...process.env, ...command.env },
           stdio: ['pipe', 'pipe', 'pipe']
         })
+
+        this.currentProcess = childProcess
 
         // Timeout handling
         const timeout = command.timeout || 300000 // 5 minutos por defecto
@@ -124,7 +129,7 @@ class StreamingCommandExecutor {
         }, timeout)
 
         // Handle stdout
-        process.stdout?.on('data', (data: Buffer) => {
+        childProcess.stdout?.on('data', (data: Buffer) => {
           const text = data.toString()
           stdout += text
           callbacks.onStdout?.(text)
@@ -134,14 +139,14 @@ class StreamingCommandExecutor {
         })
 
         // Handle stderr
-        process.stderr?.on('data', (data: Buffer) => {
+        childProcess.stderr?.on('data', (data: Buffer) => {
           const text = data.toString()
           stderr += text
           callbacks.onStderr?.(text)
         })
 
         // Handle process completion
-        process.on('close', (code) => {
+        childProcess.on('close', (code) => {
           clearTimeout(timeoutId)
 
           if (this.killed) return
@@ -157,7 +162,7 @@ class StreamingCommandExecutor {
         })
 
         // Handle process errors
-        process.on('error', (error) => {
+        childProcess.on('error', (error) => {
           clearTimeout(timeoutId)
 
           resolve({
@@ -220,6 +225,9 @@ class StreamingCommandExecutor {
 
   kill() {
     this.killed = true
+    if (this.currentProcess) {
+      this.currentProcess.kill()
+    }
   }
 }
 
@@ -531,16 +539,19 @@ async function checkIfTestsExist(): Promise<boolean> {
   ]
 
   try {
-    // Verificar si existe al menos un archivo de test
-    const { glob } = await import('glob')
-    
-    for (const pattern of testPatterns) {
-      const files = await glob(pattern, { cwd: process.cwd() })
-      if (files.length > 0) {
+    // Verificar si existen directorios de test comunes
+    const testDirs = ['__tests__', 'test', 'tests', 'src/__tests__', 'src/test']
+
+    for (const dir of testDirs) {
+      try {
+        const fullPath = path.join(process.cwd(), dir)
+        await fs.access(fullPath)
         return true
+      } catch {
+        // Continuar con el siguiente directorio
       }
     }
-    
+
     return false
   } catch {
     return false

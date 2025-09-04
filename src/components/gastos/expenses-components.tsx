@@ -30,7 +30,8 @@ import {
   Target,
   Palette
 } from 'lucide-react'
-import { Expense, ExpenseCategory } from '@/lib/mock-data'
+import { Expense } from '@/lib/mock-data'
+import { ExpenseCategory } from '@/types'
 
 // Header de gastos
 interface ExpensesHeaderProps {

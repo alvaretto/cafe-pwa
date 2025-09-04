@@ -36,7 +36,7 @@ export function DateRangeSelector({
 
   // Función para formatear fecha a string YYYY-MM-DD
   const formatDateToString = (date: Date): string => {
-    return date.toISOString().split('T')[0]
+    return date.toISOString().split('T')[0]!
   }
 
   // Función para obtener el inicio del día

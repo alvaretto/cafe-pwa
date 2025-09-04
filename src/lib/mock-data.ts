@@ -1,4 +1,5 @@
 // Datos simulados para la aplicación
+import { ExpenseCategory } from '@/types'
 
 export interface Product {
   id: string
@@ -1142,15 +1143,6 @@ export function generateRestockSuggestions(): Array<{
 }
 
 // Tipos y datos para gastos
-export interface ExpenseCategory {
-  id: string
-  name: string
-  description: string
-  color: string
-  isActive: boolean
-  monthlyBudget?: number
-  createdAt: Date
-}
 
 export interface Expense {
   id: string
@@ -2077,6 +2069,161 @@ export const MOCK_SYSTEM_CONFIG: SystemConfig[] = [
     isRequired: false,
     isVisible: true,
     order: 2,
+  },
+
+  // Configuración de Seguridad
+  {
+    id: '21',
+    category: 'seguridad',
+    key: 'session_timeout',
+    name: 'Tiempo de Sesión (minutos)',
+    description: 'Tiempo en minutos antes de cerrar sesión automáticamente',
+    type: 'number',
+    value: 60,
+    defaultValue: 60,
+    isRequired: true,
+    isVisible: true,
+    order: 1,
+  },
+  {
+    id: '22',
+    category: 'seguridad',
+    key: 'password_min_length',
+    name: 'Longitud Mínima de Contraseña',
+    description: 'Número mínimo de caracteres para contraseñas',
+    type: 'number',
+    value: 8,
+    defaultValue: 8,
+    isRequired: true,
+    isVisible: true,
+    order: 2,
+  },
+  {
+    id: '23',
+    category: 'seguridad',
+    key: 'require_special_chars',
+    name: 'Requerir Caracteres Especiales',
+    description: 'Las contraseñas deben incluir caracteres especiales',
+    type: 'boolean',
+    value: true,
+    defaultValue: true,
+    isRequired: false,
+    isVisible: true,
+    order: 3,
+  },
+  {
+    id: '24',
+    category: 'seguridad',
+    key: 'max_login_attempts',
+    name: 'Intentos Máximos de Login',
+    description: 'Número máximo de intentos de login antes de bloquear cuenta',
+    type: 'number',
+    value: 5,
+    defaultValue: 5,
+    isRequired: true,
+    isVisible: true,
+    order: 4,
+  },
+  {
+    id: '25',
+    category: 'seguridad',
+    key: 'enable_two_factor',
+    name: 'Autenticación de Dos Factores',
+    description: 'Habilitar autenticación de dos factores para todos los usuarios',
+    type: 'boolean',
+    value: false,
+    defaultValue: false,
+    isRequired: false,
+    isVisible: true,
+    order: 5,
+  },
+
+  // Configuración de Ventas
+  {
+    id: '26',
+    category: 'ventas',
+    key: 'default_payment_method',
+    name: 'Método de Pago por Defecto',
+    description: 'Método de pago seleccionado por defecto en ventas',
+    type: 'select',
+    value: 'EFECTIVO',
+    defaultValue: 'EFECTIVO',
+    options: [
+      { label: 'Efectivo', value: 'EFECTIVO' },
+      { label: 'Tarjeta', value: 'TARJETA' },
+      { label: 'Transferencia', value: 'TRANSFERENCIA' },
+      { label: 'Crédito', value: 'CREDITO' },
+    ],
+    isRequired: true,
+    isVisible: true,
+    order: 1,
+  },
+  {
+    id: '27',
+    category: 'ventas',
+    key: 'auto_print_receipt',
+    name: 'Imprimir Recibo Automáticamente',
+    description: 'Imprimir recibo automáticamente después de cada venta',
+    type: 'boolean',
+    value: true,
+    defaultValue: true,
+    isRequired: false,
+    isVisible: true,
+    order: 2,
+  },
+  {
+    id: '28',
+    category: 'ventas',
+    key: 'discount_limit',
+    name: 'Límite de Descuento (%)',
+    description: 'Porcentaje máximo de descuento permitido',
+    type: 'number',
+    value: 20,
+    defaultValue: 20,
+    isRequired: true,
+    isVisible: true,
+    order: 3,
+  },
+
+  // Configuración de Inventario
+  {
+    id: '29',
+    category: 'inventario',
+    key: 'low_stock_threshold',
+    name: 'Umbral de Stock Bajo (gramos)',
+    description: 'Cantidad mínima en gramos para alertas de stock bajo',
+    type: 'number',
+    value: 500,
+    defaultValue: 500,
+    isRequired: true,
+    isVisible: true,
+    order: 1,
+  },
+  {
+    id: '30',
+    category: 'inventario',
+    key: 'auto_reorder',
+    name: 'Reorden Automático',
+    description: 'Generar órdenes de compra automáticamente cuando el stock esté bajo',
+    type: 'boolean',
+    value: false,
+    defaultValue: false,
+    isRequired: false,
+    isVisible: true,
+    order: 2,
+  },
+  {
+    id: '31',
+    category: 'inventario',
+    key: 'track_expiration',
+    name: 'Rastrear Fechas de Vencimiento',
+    description: 'Activar seguimiento de fechas de vencimiento de productos',
+    type: 'boolean',
+    value: true,
+    defaultValue: true,
+    isRequired: false,
+    isVisible: true,
+    order: 3,
   },
 ]
 

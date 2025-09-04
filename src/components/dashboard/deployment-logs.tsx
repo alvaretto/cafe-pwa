@@ -50,7 +50,7 @@ interface ParsedLog {
 function parseLog(log: string): ParsedLog {
   // Extraer timestamp si existe
   const timestampMatch = log.match(/^\[([^\]]+)\]/)
-  const timestamp = timestampMatch ? timestampMatch[1] : new Date().toISOString()
+  const timestamp = timestampMatch?.[1] || new Date().toISOString()
   
   // Determinar nivel basado en contenido
   let level: LogLevel = 'info'

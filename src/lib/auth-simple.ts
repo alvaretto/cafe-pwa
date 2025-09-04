@@ -84,7 +84,7 @@ const AUTH_KEY = 'tinto-auth-user'
  */
 function isDevelopmentMode(): boolean {
   // Verificar múltiples formas de detectar desarrollo
-  const isNodeDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'dev'
+  const isNodeDev = process.env.NODE_ENV === 'development'
 
   if (typeof window !== 'undefined') {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -110,9 +110,12 @@ export function createMockUser(): User {
     id: 'dev-admin-001',
     name: 'Administrador Desarrollo',
     email: 'admin@tintodel-mirador.com',
-    role: 'ADMIN' as const,
-    image: null,
-    emailVerified: null,
+    role: 'ADMIN' as any,
+    image: '',
+    emailVerified: new Date(),
+    isActive: true,
+    twoFactorEnabled: false,
+    biometricEnabled: false,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date(),
     lastLogin: new Date(),
@@ -125,7 +128,7 @@ export function createMockUser(): User {
 function performAutoLogin(): User {
   console.log('🔧 Modo desarrollo detectado: Realizando auto-login con usuario administrador')
   const adminUser = DEMO_USERS[0] // Usuario administrador
-  const { password: _, ...userWithoutPassword } = adminUser
+  const { password: _, ...userWithoutPassword } = adminUser as any
   const authenticatedUser = {
     ...userWithoutPassword,
     lastLogin: new Date(),

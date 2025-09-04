@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, CustomerSegment } from '@prisma/client'
 import { hash } from 'bcryptjs'
 
 const prisma = new PrismaClient()
@@ -191,7 +191,7 @@ async function main() {
       birthMonth: 3,
       birthDay: 15,
       coffeePreferences: 'Café fuerte, sin azúcar',
-      segment: 'FRECUENTE',
+      segment: CustomerSegment.FRECUENTE,
       loyaltyPoints: 150,
       totalSpent: 125000,
     },
@@ -204,7 +204,7 @@ async function main() {
       birthMonth: 7,
       birthDay: 22,
       coffeePreferences: 'Café suave con leche',
-      segment: 'VIP',
+      segment: CustomerSegment.VIP,
       loyaltyPoints: 300,
       totalSpent: 250000,
     },
@@ -217,7 +217,7 @@ async function main() {
       birthMonth: 12,
       birthDay: 5,
       coffeePreferences: 'Café orgánico',
-      segment: 'OCASIONAL',
+      segment: CustomerSegment.OCASIONAL,
       loyaltyPoints: 50,
       totalSpent: 75000,
     },

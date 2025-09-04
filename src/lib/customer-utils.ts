@@ -77,7 +77,7 @@ export function validateCustomer(customer: {
     // Validación específica por mes
     if (customer.birthMonth) {
       const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-      if (customer.birthDay > daysInMonth[customer.birthMonth - 1]) {
+      if (customer.birthDay && customer.birthDay > daysInMonth[customer.birthMonth - 1]!) {
         errors.birthDay = `El mes ${customer.birthMonth} no tiene ${customer.birthDay} días`
       }
     }

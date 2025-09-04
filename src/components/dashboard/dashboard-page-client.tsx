@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { DashboardContentSimple } from './dashboard-content-simple'
 import { Loader2, Coffee } from 'lucide-react'
+import { UserRole } from '@/types'
 
 export function DashboardPageClient() {
   const { data: session, status } = useSession()
@@ -40,9 +41,11 @@ export function DashboardPageClient() {
     id: session.user.id,
     name: session.user.name || 'Usuario',
     email: session.user.email || '',
-    role: session.user.role as 'ADMIN' | 'VENDEDOR',
-    image: session.user.image,
-    emailVerified: null,
+    role: session.user.role as UserRole,
+    image: session.user.image || '',
+    isActive: true,
+    twoFactorEnabled: false,
+    biometricEnabled: false,
     createdAt: new Date(),
     updatedAt: new Date(),
     lastLogin: new Date(),

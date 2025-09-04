@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { User } from '@/types'
 import {
   Expense,
-  ExpenseCategory,
   MOCK_EXPENSES,
   MOCK_EXPENSE_CATEGORIES,
   getExpensesStats,
@@ -14,6 +13,7 @@ import {
   updateExpenseCategory,
   deleteExpenseCategory
 } from '@/lib/mock-data'
+import { ExpenseCategory } from '@/types'
 import { DashboardHeaderSimple } from '@/components/dashboard/dashboard-header-simple'
 import {
   ExpensesHeader,
@@ -173,7 +173,7 @@ export function ExpensesContent({ user }: ExpensesContentProps) {
           ? {
               ...e,
               isApproved: true,
-              approvedBy: user.name,
+              approvedBy: user.name || 'Usuario',
               approvedAt: new Date(),
               updatedAt: new Date()
             }
@@ -307,11 +307,11 @@ export function ExpensesContent({ user }: ExpensesContentProps) {
 
         {activeTab === 'categories' && (
           <ExpenseCategoriesManagement
-            categories={categories}
-            onCreateCategory={handleCreateCategory}
-            onEditCategory={handleEditCategory}
-            onDeleteCategory={handleDeleteCategory}
-            onViewCategory={handleViewCategory}
+            categories={categories as any}
+            onCreateCategory={handleCreateCategory as any}
+            onEditCategory={handleEditCategory as any}
+            onDeleteCategory={handleDeleteCategory as any}
+            onViewCategory={handleViewCategory as any}
           />
         )}
       </div>
@@ -332,9 +332,9 @@ export function ExpensesContent({ user }: ExpensesContentProps) {
       <ExpenseCategoryModal
         isOpen={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
-        category={selectedCategory}
+        category={selectedCategory as any}
         mode={categoryModalMode}
-        categories={categories}
+        categories={categories as any}
         onSave={handleSaveCategory}
         onDelete={handleDeleteCategory}
       />

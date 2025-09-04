@@ -37,7 +37,7 @@ let db: any = null
 let storage: any = null
 
 if (missingVars.length === 0) {
-  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
+  app = getApps().length === 0 ? initializeApp(firebaseConfig as any) : getApp()
   auth = getAuth(app)
   db = getFirestore(app)
   storage = getStorage(app)

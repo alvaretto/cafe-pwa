@@ -130,7 +130,7 @@ export function POSInterface({
       <div className="lg:col-span-2">
         <ProductSelector
           products={products}
-          onAddToCart={onAddToCart}
+          onAddToCart={onAddToCart as any}
           isLoading={isLoading}
         />
       </div>

@@ -172,8 +172,6 @@ export function useDeployment(options: UseDeploymentOptions = {}) {
       validations: [],
       steps: [],
       logs: [],
-      error: undefined,
-      deploymentUrl: undefined,
       startTime: new Date()
     })
 

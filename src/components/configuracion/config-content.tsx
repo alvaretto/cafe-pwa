@@ -68,7 +68,7 @@ export function ConfigContent({ user }: ConfigContentProps) {
     setSystemConfig(prev =>
       prev.map(config =>
         config.key === key
-          ? { ...config, value, updatedBy: user.name, updatedAt: new Date() }
+          ? { ...config, value, updatedBy: user.name || 'Usuario', updatedAt: new Date() }
           : config
       )
     )

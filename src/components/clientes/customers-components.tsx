@@ -452,10 +452,10 @@ export function CustomersGrid({
               </div>
 
               {/* Dirección */}
-              {customer.address && (
+              {customer.direccionCasa && (
                 <div className="flex items-start space-x-2 text-xs text-gray-500">
                   <MapPin className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                  <span className="line-clamp-2">{customer.address}</span>
+                  <span className="line-clamp-2">{customer.direccionCasa}</span>
                 </div>
               )}
             </div>

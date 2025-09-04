@@ -62,7 +62,7 @@ export function generateRandomColor(): string {
     '#A855F7', // purple-500
   ]
   
-  return colors[Math.floor(Math.random() * colors.length)]
+  return colors[Math.floor(Math.random() * colors.length)] || '#6366f1'
 }
 
 /**

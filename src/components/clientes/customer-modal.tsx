@@ -50,15 +50,13 @@ export function CustomerModal({
   onDelete,
   onModeChange,
 }: CustomerModalProps) {
-  const [formData, setFormData] = useState<Partial<Customer>>({
+  const [formData, setFormData] = useState<any>({
     nombres: '',
     apellidos: '',
     celular: '',
     direccionCasa: '',
     email: '',
     direccionTrabajo: '',
-    birthMonth: undefined,
-    birthDay: undefined,
     coffeePreferences: '',
     notes: '',
   })
@@ -74,11 +72,11 @@ export function CustomerModal({
         celular: customer.celular,
         direccionCasa: customer.direccionCasa,
         email: customer.email,
-        direccionTrabajo: customer.direccionTrabajo,
+        direccionTrabajo: customer.direccionTrabajo || '',
         birthMonth: customer.birthMonth,
         birthDay: customer.birthDay,
-        coffeePreferences: customer.coffeePreferences,
-        notes: customer.notes,
+        coffeePreferences: customer.coffeePreferences || '',
+        notes: customer.notes || '',
       })
       // Cargar historial de compras
       const history = getCustomerPurchaseHistory(customer.id)
@@ -102,7 +100,7 @@ export function CustomerModal({
   }, [customer, mode, isOpen])
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData((prev: any) => ({ ...prev, [field]: value }))
     
     // Limpiar error del campo
     if (errors[field]) {

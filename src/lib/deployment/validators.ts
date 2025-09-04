@@ -4,6 +4,8 @@
  */
 
 import { ValidationResult, ValidationType, CLICommand, CLIResult } from '@/types/deployment'
+import path from 'path'
+import { promises as fs } from 'fs'
 
 // Simulación de comandos para el cliente (demo mode)
 const isClient = typeof window !== 'undefined'

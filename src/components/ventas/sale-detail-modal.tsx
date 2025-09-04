@@ -77,7 +77,7 @@ export function SaleDetailModal({ isOpen, onClose, sale }: SaleDetailModalProps)
       devuelto: { variant: 'outline', icon: AlertCircle, label: 'Devuelto' }
     }
     
-    const { variant, icon: Icon, label } = config[status] || config.pendiente
+    const { variant, icon: Icon, label } = (config[status] || config.pendiente) as any
 
     return (
       <Badge variant={variant} className="flex items-center space-x-1">

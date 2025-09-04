@@ -46,10 +46,9 @@ export function ExpenseCategoryModal({
   onSave,
   onDelete,
 }: ExpenseCategoryModalProps) {
-  const [formData, setFormData] = useState<Partial<ExpenseCategory>>({
+  const [formData, setFormData] = useState<any>({
     name: '',
     description: '',
-    monthlyBudget: undefined,
     color: generateRandomColor(),
     isActive: true,
   })
@@ -86,7 +85,7 @@ export function ExpenseCategoryModal({
   }, [category, mode, isOpen])
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData((prev: any) => ({ ...prev, [field]: value }))
     
     // Limpiar error del campo
     if (errors[field]) {

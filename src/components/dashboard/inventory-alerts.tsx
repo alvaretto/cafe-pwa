@@ -25,7 +25,7 @@ export function InventoryAlerts({ isLoading }: InventoryAlertsProps) {
       productName: 'Café Arábica Premium',
       currentStock: 150, // gramos
       minimumStock: 500,
-      status: 'critical',
+      status: 'critical' as const,
       category: 'Café Arábica',
       lastRestock: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 días atrás
     },
@@ -34,7 +34,7 @@ export function InventoryAlerts({ isLoading }: InventoryAlertsProps) {
       productName: 'Mezcla del Mirador',
       currentStock: 0,
       minimumStock: 300,
-      status: 'out_of_stock',
+      status: 'out_of_stock' as const,
       category: 'Mezclas Especiales',
       lastRestock: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 días atrás
     },
@@ -43,7 +43,7 @@ export function InventoryAlerts({ isLoading }: InventoryAlertsProps) {
       productName: 'Café Robusta Intenso',
       currentStock: 250,
       minimumStock: 400,
-      status: 'low',
+      status: 'low' as const,
       category: 'Café Robusta',
       lastRestock: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 días atrás
     },

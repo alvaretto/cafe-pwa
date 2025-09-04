@@ -67,9 +67,11 @@ export function ReportsContent({ user }: ReportsContentProps) {
     loadReportsData()
   }
 
-  const handleGenerateReport = async (templateId: string, startDate: Date, endDate: Date) => {
+  const handleGenerateReport = async (templateId: string, startDate: Date, endDate: Date): Promise<ReportData> => {
     const template = templates.find(t => t.id === templateId)
-    if (!template) return
+    if (!template) {
+      throw new Error('Template no encontrado')
+    }
 
     // Simular generación de reporte
     const newReport: ReportData = {
@@ -145,7 +147,7 @@ export function ReportsContent({ user }: ReportsContentProps) {
           ? { 
               ...template, 
               isScheduled: schedule,
-              nextRun: schedule ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : undefined,
+              nextRun: schedule ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : new Date(),
               updatedAt: new Date()
             }
           : template

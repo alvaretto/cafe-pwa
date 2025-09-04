@@ -191,7 +191,7 @@ export async function runDemoHealthChecks(
 
   for (let i = 0; i < healthChecks.length; i++) {
     const check = healthChecks[i]
-    const log = `[${new Date().toISOString()}] Verificando ${check.name}: ${check.url}`
+    const log = `[${new Date().toISOString()}] Verificando ${check?.name}: ${check?.url}`
     step.logs.push(log)
     
     onLog?.(step, log)
@@ -200,7 +200,7 @@ export async function runDemoHealthChecks(
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000))
     
     // Simular resultado exitoso
-    const successLog = `[${new Date().toISOString()}] ✓ ${check.name} - 200ms (200)`
+    const successLog = `[${new Date().toISOString()}] ✓ ${check?.name} - 200ms (200)`
     step.logs.push(successLog)
     step.progress = Math.round(((i + 1) / healthChecks.length) * 100)
     

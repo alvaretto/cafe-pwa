@@ -101,7 +101,7 @@ export function PurchaseOrderModal({
     }
     
     const supplierId = categorySupplierMap[category] || '1'
-    return MOCK_SUPPLIERS.find(s => s.id === supplierId) || MOCK_SUPPLIERS[0]
+    return MOCK_SUPPLIERS.find(s => s.id === supplierId) || MOCK_SUPPLIERS[0]!
   }
 
   const getEstimatedUnitCost = (productName: string): number => {
@@ -126,7 +126,7 @@ export function PurchaseOrderModal({
 
   const updateOrderItem = (index: number, field: keyof PurchaseOrderItem, value: any) => {
     const updatedItems = [...orderItems]
-    updatedItems[index] = { ...updatedItems[index], [field]: value }
+    updatedItems[index] = { ...updatedItems[index], [field]: value } as PurchaseOrderItem
     
     // Recalcular costo total si cambia cantidad o costo unitario
     if (field === 'selectedQuantity' || field === 'unitCost') {

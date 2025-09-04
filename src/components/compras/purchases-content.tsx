@@ -176,8 +176,7 @@ export function PurchasesContent({ user }: PurchasesContentProps) {
       cost: totalCost,
       supplierId: purchaseData.supplierId,
       supplierName: supplier?.name || 'Proveedor desconocido',
-      reason,
-      updatedAt: new Date()
+      reason
     }
 
     // Actualizar la lista de compras
@@ -227,9 +226,10 @@ export function PurchasesContent({ user }: PurchasesContentProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <DashboardHeaderSimple 
-        title="Compras de Inventario"
-        subtitle="Gestión de compras a proveedores y entradas de stock"
+      <DashboardHeaderSimple
+        user={user}
+        onRefresh={() => {}}
+        isLoading={false}
       />
 
       <div className="container mx-auto px-4 py-6 space-y-6">

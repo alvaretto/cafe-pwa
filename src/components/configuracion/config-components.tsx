@@ -251,16 +251,185 @@ export function SystemSettings({ config, selectedCategory, onCategoryChange, onC
     )
   }
 
+  const categories = Array.from(new Set(config.map(c => c.category)))
+  const filteredConfig = config.filter(c => c.category === selectedCategory)
+
+  const getCategoryDisplayName = (category: string) => {
+    const names: Record<string, string> = {
+      'general': 'General',
+      'empresa': 'Empresa',
+      'ventas': 'Ventas',
+      'inventario': 'Inventario',
+      'notificaciones': 'Notificaciones',
+      'seguridad': 'Seguridad',
+      'integraciones': 'Integraciones'
+    }
+    return names[category] || category
+  }
+
+  const renderConfigField = (configItem: any) => {
+    const { id, key, name, description, type, value, options, isRequired } = configItem
+
+    switch (type) {
+      case 'boolean':
+        return (
+          <div key={id} className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex-1">
+              <label className="text-sm font-medium text-gray-900">
+                {name}
+                {isRequired && <span className="text-red-500 ml-1">*</span>}
+              </label>
+              <p className="text-xs text-gray-600 mt-1">{description}</p>
+            </div>
+            <Switch
+              checked={value}
+              onCheckedChange={(checked) => onConfigChange(key, checked)}
+            />
+          </div>
+        )
+
+      case 'select':
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <Select value={value} onValueChange={(newValue) => onConfigChange(key, newValue)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {options?.map((option: any) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )
+
+      case 'number':
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <Input
+              type="number"
+              value={value}
+              onChange={(e) => onConfigChange(key, Number(e.target.value))}
+              className="w-full"
+            />
+          </div>
+        )
+
+      case 'color':
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <div className="flex items-center space-x-3">
+              <Input
+                type="color"
+                value={value}
+                onChange={(e) => onConfigChange(key, e.target.value)}
+                className="w-16 h-10 p-1 border rounded"
+              />
+              <Input
+                type="text"
+                value={value}
+                onChange={(e) => onConfigChange(key, e.target.value)}
+                className="flex-1"
+                placeholder="#000000"
+              />
+            </div>
+          </div>
+        )
+
+      default: // string
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <Input
+              type="text"
+              value={value}
+              onChange={(e) => onConfigChange(key, e.target.value)}
+              className="w-full"
+            />
+          </div>
+        )
+    }
+  }
+
   return (
-    <Card className="bg-white shadow-sm">
-      <CardContent className="flex flex-col items-center justify-center py-12">
-        <Settings className="h-16 w-16 text-gray-400 mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Configuración del Sistema</h3>
-        <p className="text-gray-600 text-center">
-          Funcionalidad de configuración avanzada próximamente disponible.
-        </p>
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {/* Sidebar de categorías */}
+      <Card className="bg-white shadow-sm lg:col-span-1">
+        <CardHeader>
+          <CardTitle className="text-lg">Categorías</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="space-y-1">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => onCategoryChange(category)}
+                className={`w-full text-left px-4 py-3 text-sm transition-colors ${
+                  selectedCategory === category
+                    ? 'bg-amber-50 text-amber-900 border-r-2 border-amber-500'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {getCategoryDisplayName(category)}
+                <span className="ml-2 text-xs text-gray-500">
+                  ({config.filter(c => c.category === category).length})
+                </span>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Contenido de configuración */}
+      <div className="lg:col-span-3">
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-xl">
+              Configuración de {getCategoryDisplayName(selectedCategory)}
+            </CardTitle>
+            <p className="text-gray-600">
+              Personaliza las configuraciones del sistema para la categoría {getCategoryDisplayName(selectedCategory).toLowerCase()}
+            </p>
+          </CardHeader>
+          <CardContent>
+            {filteredConfig.length > 0 ? (
+              <div className="space-y-4">
+                {filteredConfig
+                  .sort((a, b) => a.order - b.order)
+                  .map(renderConfigField)}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <Settings className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <p>No hay configuraciones disponibles para esta categoría</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   )
 }
 
@@ -471,14 +640,112 @@ export function CompanySettings({ config, onConfigChange, isLoading }: CompanySe
     )
   }
 
+  const companyConfig = config.filter(c => c.category === 'empresa')
+
+  const renderCompanyField = (configItem: any) => {
+    const { id, key, name, description, type, value, options, isRequired } = configItem
+
+    switch (type) {
+      case 'boolean':
+        return (
+          <div key={id} className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex-1">
+              <label className="text-sm font-medium text-gray-900">
+                {name}
+                {isRequired && <span className="text-red-500 ml-1">*</span>}
+              </label>
+              <p className="text-xs text-gray-600 mt-1">{description}</p>
+            </div>
+            <Switch
+              checked={value}
+              onCheckedChange={(checked) => onConfigChange(key, checked)}
+            />
+          </div>
+        )
+
+      case 'select':
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <Select value={value} onValueChange={(newValue) => onConfigChange(key, newValue)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {options?.map((option: any) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )
+
+      case 'textarea':
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <Textarea
+              value={value}
+              onChange={(e) => onConfigChange(key, e.target.value)}
+              className="w-full"
+              rows={3}
+            />
+          </div>
+        )
+
+      default: // string
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <Input
+              type="text"
+              value={value}
+              onChange={(e) => onConfigChange(key, e.target.value)}
+              className="w-full"
+            />
+          </div>
+        )
+    }
+  }
+
   return (
     <Card className="bg-white shadow-sm">
-      <CardContent className="flex flex-col items-center justify-center py-12">
-        <Building className="h-16 w-16 text-gray-400 mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Configuración de Empresa</h3>
-        <p className="text-gray-600 text-center">
-          Funcionalidad de configuración empresarial próximamente disponible.
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <Building className="h-5 w-5 text-amber-600" />
+          <span>Configuración de Empresa</span>
+        </CardTitle>
+        <p className="text-gray-600">
+          Configura la información básica de tu empresa y personaliza la experiencia del sistema
         </p>
+      </CardHeader>
+      <CardContent>
+        {companyConfig.length > 0 ? (
+          <div className="space-y-4">
+            {companyConfig
+              .sort((a, b) => a.order - b.order)
+              .map(renderCompanyField)}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <Building className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+            <p>No hay configuraciones de empresa disponibles</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
@@ -675,6 +942,8 @@ interface SecuritySettingsProps {
 }
 
 export function SecuritySettings({ config, onConfigChange, isLoading }: SecuritySettingsProps) {
+  const [showPasswords, setShowPasswords] = useState(false)
+
   if (isLoading) {
     return (
       <Card className="bg-white shadow-sm">
@@ -685,14 +954,138 @@ export function SecuritySettings({ config, onConfigChange, isLoading }: Security
     )
   }
 
+  const securityConfig = config.filter(c => c.category === 'seguridad')
+
+  const renderSecurityField = (configItem: any) => {
+    const { id, key, name, description, type, value, options, isRequired } = configItem
+
+    switch (type) {
+      case 'boolean':
+        return (
+          <div key={id} className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex-1">
+              <label className="text-sm font-medium text-gray-900">
+                {name}
+                {isRequired && <span className="text-red-500 ml-1">*</span>}
+              </label>
+              <p className="text-xs text-gray-600 mt-1">{description}</p>
+            </div>
+            <Switch
+              checked={value}
+              onCheckedChange={(checked) => onConfigChange(key, checked)}
+            />
+          </div>
+        )
+
+      case 'password':
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <div className="relative">
+              <Input
+                type={showPasswords ? "text" : "password"}
+                value={value}
+                onChange={(e) => onConfigChange(key, e.target.value)}
+                className="w-full pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswords(!showPasswords)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showPasswords ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+        )
+
+      case 'select':
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <Select value={value} onValueChange={(newValue) => onConfigChange(key, newValue)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {options?.map((option: any) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )
+
+      case 'number':
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <Input
+              type="number"
+              value={value}
+              onChange={(e) => onConfigChange(key, Number(e.target.value))}
+              className="w-full"
+            />
+          </div>
+        )
+
+      default: // string
+        return (
+          <div key={id} className="p-4 border rounded-lg">
+            <label className="text-sm font-medium text-gray-900 block mb-2">
+              {name}
+              {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <p className="text-xs text-gray-600 mb-3">{description}</p>
+            <Input
+              type="text"
+              value={value}
+              onChange={(e) => onConfigChange(key, e.target.value)}
+              className="w-full"
+            />
+          </div>
+        )
+    }
+  }
+
   return (
     <Card className="bg-white shadow-sm">
-      <CardContent className="flex flex-col items-center justify-center py-12">
-        <Shield className="h-16 w-16 text-gray-400 mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Configuración de Seguridad</h3>
-        <p className="text-gray-600 text-center">
-          Funcionalidad de configuración de seguridad próximamente disponible.
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <Shield className="h-5 w-5 text-red-600" />
+          <span>Configuración de Seguridad</span>
+        </CardTitle>
+        <p className="text-gray-600">
+          Configura las opciones de seguridad del sistema para proteger tu información
         </p>
+      </CardHeader>
+      <CardContent>
+        {securityConfig.length > 0 ? (
+          <div className="space-y-4">
+            {securityConfig
+              .sort((a, b) => a.order - b.order)
+              .map(renderSecurityField)}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <Shield className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+            <p>No hay configuraciones de seguridad disponibles</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

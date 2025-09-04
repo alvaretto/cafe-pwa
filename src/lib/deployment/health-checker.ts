@@ -92,12 +92,14 @@ export class HealthChecker {
     for (let i = 0; i < configs.length; i++) {
       this.callbacks.onProgress?.(i + 1, configs.length)
       
-      const result = await this.runHealthCheck(configs[i])
+      const config = configs[i]
+      if (!config) continue
+      const result = await this.runHealthCheck(config)
       results.push(result)
 
       // Si un check crítico falla, podemos decidir parar
-      if (!result.success && this.isCriticalCheck(configs[i])) {
-        console.warn(`Critical health check failed: ${configs[i].url}`)
+      if (!result.success && this.isCriticalCheck(config)) {
+        console.warn(`Critical health check failed: ${config.url}`)
       }
     }
 
@@ -143,7 +145,7 @@ export class HealthChecker {
         success: success && contentCheck,
         status: response.status,
         responseTime,
-        error: success && contentCheck ? undefined : `Expected status ${config.expectedStatus}, got ${response.status}`,
+        error: success && contentCheck ? '' : `Expected status ${config.expectedStatus}, got ${response.status}`,
         timestamp: new Date()
       }
     } catch (error: any) {
@@ -277,9 +279,10 @@ export async function runPostDeploymentHealthChecks(
 
     // Analizar resultados
     const failedChecks = results.filter(r => !r.success)
-    const criticalFailures = failedChecks.filter((_, index) => 
-      checker['isCriticalCheck'](healthChecks[index])
-    )
+    const criticalFailures = failedChecks.filter((_, index) => {
+      const check = healthChecks[index]
+      return check && checker['isCriticalCheck'](check)
+    })
 
     if (criticalFailures.length > 0) {
       step.status = 'error'

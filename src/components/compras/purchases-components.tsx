@@ -435,7 +435,7 @@ export function NewPurchaseForm({ products, suppliers, onSubmit, isLoading }: Ne
         quantity: parseFloat(formData.quantity),
         unitType: formData.unitType,
         unitCost: parseFloat(formData.unitCost),
-        notes: formData.notes || undefined
+        notes: formData.notes || ''
       })
 
       // Limpiar formulario
@@ -622,7 +622,7 @@ export function NewPurchaseForm({ products, suppliers, onSubmit, isLoading }: Ne
               <h4 className="font-medium text-blue-900 mb-2">Información del Producto</h4>
               <div className="grid gap-2 text-sm">
                 <p><span className="font-medium">Stock actual:</span> {(selectedProduct.stock / 1000).toFixed(1)} kg</p>
-                <p><span className="font-medium">Precio de venta:</span> {formatCurrency(selectedProduct.price)}</p>
+                <p><span className="font-medium">Precio de venta:</span> {formatCurrency(selectedProduct.pricePerKilo)}</p>
                 <p><span className="font-medium">Categoría:</span> {selectedProduct.category}</p>
               </div>
             </div>
@@ -953,7 +953,7 @@ export function EditPurchaseModal({
   // Función para extraer la cantidad original del reason
   const extractOriginalQuantityAndUnit = (reason: string) => {
     const match = reason.match(/(\d+(?:\.\d+)?)\s+(gramos|media_libra|libra|kilogramo)/)
-    if (match) {
+    if (match && match[1] && match[2]) {
       return {
         quantity: parseFloat(match[1]),
         unit: match[2] as 'gramos' | 'media_libra' | 'libra' | 'kilogramo'
@@ -998,7 +998,7 @@ export function EditPurchaseModal({
         unitType: formData.unitType,
         unitCost: parseFloat(formData.unitCost),
         supplierId: formData.supplierId,
-        notes: formData.notes || undefined
+        notes: formData.notes || ''
       })
 
       onClose()

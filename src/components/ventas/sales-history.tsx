@@ -173,7 +173,7 @@ export function SalesHistory({ isLoading = false }: SalesHistoryProps) {
   }, [])
 
   const uniqueSellers = useMemo(() => {
-    const sellers = [...new Set(sales.map(sale => ({ id: sale.sellerId, name: sale.sellerName })))]
+    const sellers = Array.from(new Set(sales.map(sale => ({ id: sale.sellerId, name: sale.sellerName }))))
     return sellers.filter((seller, index, self) => 
       index === self.findIndex(s => s.id === seller.id)
     )

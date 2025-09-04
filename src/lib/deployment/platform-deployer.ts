@@ -107,7 +107,7 @@ abstract class PlatformDeployer {
       const { spawn } = await import('child_process')
 
       return new Promise((resolve) => {
-        const process = spawn(command.command, command.args, {
+        const childProcess = spawn(command.command, command.args, {
           cwd: command.cwd,
           env: { ...process.env, ...command.env },
           stdio: ['pipe', 'pipe', 'pipe']
@@ -119,7 +119,7 @@ abstract class PlatformDeployer {
         // Timeout handling
         const timeout = command.timeout || 600000 // 10 minutos por defecto
         const timeoutId = setTimeout(() => {
-          process.kill('SIGTERM')
+          childProcess.kill('SIGTERM')
           resolve({
             success: false,
             exitCode: -1,
@@ -131,7 +131,7 @@ abstract class PlatformDeployer {
         }, timeout)
 
         // Handle stdout
-        process.stdout?.on('data', (data: Buffer) => {
+        childProcess.stdout?.on('data', (data: Buffer) => {
           const text = data.toString()
           stdout += text
           step.logs.push(text)
@@ -149,7 +149,7 @@ abstract class PlatformDeployer {
         })
 
         // Handle stderr
-        process.stderr?.on('data', (data: Buffer) => {
+        childProcess.stderr?.on('data', (data: Buffer) => {
           const text = data.toString()
           stderr += text
           step.logs.push(`[ERROR] ${text}`)
@@ -157,7 +157,7 @@ abstract class PlatformDeployer {
         })
 
         // Handle process completion
-        process.on('close', (code) => {
+        childProcess.on('close', (code) => {
           clearTimeout(timeoutId)
           resolve({
             success: code === 0,

@@ -302,7 +302,7 @@ export async function logAuditEvent(
         newValues: newValues ? JSON.stringify(newValues) : null,
         ipAddress,
         userAgent,
-      },
+      } as any,
     })
   } catch (error) {
     console.error('Audit log error:', error)
