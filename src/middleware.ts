@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
 // Rutas que requieren autenticación
 const protectedRoutes = [
@@ -46,9 +47,9 @@ const publicRoutes = [
   '/images/',
 ]
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  
+
   // Permitir archivos estáticos y rutas de Next.js
   if (
     pathname.startsWith('/_next/') ||
@@ -60,7 +61,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Verificar si es una ruta pública
-  const isPublicRoute = publicRoutes.some(route => 
+  const isPublicRoute = publicRoutes.some(route =>
     pathname === route || pathname.startsWith(route)
   )
 
@@ -69,15 +70,17 @@ export function middleware(request: NextRequest) {
   }
 
   // Verificar si es una ruta protegida
-  const isProtectedRoute = protectedRoutes.some(route => 
+  const isProtectedRoute = protectedRoutes.some(route =>
     pathname === route || pathname.startsWith(route)
   )
 
   if (isProtectedRoute) {
-    // TODO: Verificar token de autenticación
-    // Por ahora, redirigir a la página de inicio si no está autenticado
-    const token = request.cookies.get('auth-token')?.value
-    
+    // Verificar token de NextAuth
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
+    })
+
     if (!token) {
       const url = request.nextUrl.clone()
       url.pathname = '/'
@@ -86,13 +89,14 @@ export function middleware(request: NextRequest) {
     }
 
     // Verificar rutas de solo administrador
-    const isAdminRoute = adminOnlyRoutes.some(route => 
+    const isAdminRoute = adminOnlyRoutes.some(route =>
       pathname === route || pathname.startsWith(route)
     )
 
-    if (isAdminRoute) {
-      // TODO: Verificar si el usuario es administrador
-      // Por ahora, permitir acceso
+    if (isAdminRoute && token.role !== 'ADMIN') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
     }
   }
 

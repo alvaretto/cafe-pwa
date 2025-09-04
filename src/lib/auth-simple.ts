@@ -109,7 +109,7 @@ export function createMockUser(): User {
   return {
     id: 'dev-admin-001',
     name: 'Administrador Desarrollo',
-    email: 'admin@tintodel mirador.com',
+    email: 'admin@tintodel-mirador.com',
     role: 'ADMIN' as const,
     image: null,
     emailVerified: null,

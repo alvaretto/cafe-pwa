@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { ProtectedRoute } from '@/components/auth/protected-route'
 import { ExpensesPageClient } from '@/components/gastos/expenses-page-client'
 
 export const metadata: Metadata = {
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 }
 
 export default function ExpensesPage() {
-  return <ExpensesPageClient />
+  return (
+    <ProtectedRoute requireAdmin={true}>
+      <ExpensesPageClient />
+    </ProtectedRoute>
+  )
 }

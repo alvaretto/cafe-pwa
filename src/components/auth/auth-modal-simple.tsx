@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Coffee, Eye, EyeOff, Loader2, Info } from 'lucide-react'
-import { signIn, signUp, getDemoCredentials } from '@/lib/auth-simple'
+import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 interface AuthModalProps {
@@ -28,7 +28,11 @@ export function AuthModalSimple({ isOpen, onClose, mode, onModeChange }: AuthMod
   })
   const router = useRouter()
 
-  const demoCredentials = getDemoCredentials()
+  // Credenciales de demo
+  const demoCredentials = {
+    admin: { email: 'admin@tintodel-mirador.com', password: 'admin123' },
+    vendedor: { email: 'vendedor@tintodel-mirador.com', password: 'vendedor123' }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,31 +41,21 @@ export function AuthModalSimple({ isOpen, onClose, mode, onModeChange }: AuthMod
 
     try {
       if (mode === 'signup') {
-        if (formData.password !== formData.confirmPassword) {
-          setError('Las contraseñas no coinciden')
-          return
-        }
-        
-        const { user, error } = await signUp(formData.email, formData.password, formData.name)
-        
-        if (error) {
-          setError(error)
-          return
-        }
-        
-        if (user) {
-          onClose()
-          router.push('/dashboard')
-        }
+        setError('El registro no está disponible en la demo. Use las credenciales de prueba.')
+        return
       } else {
-        const { user, error } = await signIn(formData.email, formData.password)
-        
-        if (error) {
-          setError(error)
+        const result = await signIn('credentials', {
+          email: formData.email,
+          password: formData.password,
+          redirect: false,
+        })
+
+        if (result?.error) {
+          setError('Credenciales incorrectas. Use las credenciales de demo.')
           return
         }
-        
-        if (user) {
+
+        if (result?.ok) {
           onClose()
           router.push('/dashboard')
         }

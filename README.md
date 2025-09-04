@@ -168,30 +168,45 @@ NEXT_PUBLIC_APP_NAME="Tinto del Mirador CRM"
 
 ### 4. Ejecutar en modo desarrollo
 ```bash
-# Ejecutar en puerto por defecto (recomendado)
+# Ejecutar en puerto fijo 3001 (configurado permanentemente)
 npm run dev
-
-# O usar un puerto específico (opcional)
-PORT=3002 npm run dev
 ```
 
 La aplicación estará disponible en:
-- **Puerto 3001**: `http://localhost:3001` (puerto fijo configurado - recomendado)
-- **Puerto personalizado**: `http://localhost:[PUERTO]` (si usas PORT=XXXX)
+- **Puerto 3001**: `http://localhost:3001` (puerto fijo y permanente)
+
+### 🔑 Credenciales de Acceso
+
+La aplicación incluye un sistema de autenticación completo. Al acceder a cualquier ruta protegida, se mostrará automáticamente un modal de login con las siguientes credenciales de demo:
+
+**👤 Usuario Administrador:**
+- **Email**: `admin@tintodel-mirador.com`
+- **Contraseña**: `admin123`
+- **Permisos**: Acceso completo a todos los módulos
+
+**👤 Usuario Vendedor:**
+- **Email**: `vendedor@tintodel-mirador.com`
+- **Contraseña**: `vendedor123`
+- **Permisos**: Acceso a ventas, clientes, productos, inventario y reportes
+
+> **Nota**: El modal de login incluye botones para llenar automáticamente estas credenciales.
 
 #### 🌐 URLs de Acceso a los Módulos
-Una vez que la aplicación esté ejecutándose, puedes acceder a:
+Una vez autenticado, puedes acceder a todos los módulos:
 
-- **🏠 Página Principal**: `http://localhost:3001`
-- **📊 Dashboard**: `http://localhost:3001/dashboard`
-- **🛍️ Ventas**: `http://localhost:3001/ventas`
-- **👥 Clientes**: `http://localhost:3001/clientes`
-- **☕ Productos**: `http://localhost:3001/productos`
-- **📦 Inventario**: `http://localhost:3001/inventario`
-- **🛒 Compras**: `http://localhost:3001/compras`
-- **💰 Gastos**: `http://localhost:3001/gastos`
-- **📊 Reportes**: `http://localhost:3001/reportes`
-- **⚙️ Configuración**: `http://localhost:3001/configuracion`
+- **🏠 Página Principal**: `http://localhost:3001` (página de login)
+- **📊 Dashboard**: `http://localhost:3001/dashboard` 🔒
+- **🛍️ Ventas**: `http://localhost:3001/ventas` 🔒
+- **👥 Clientes**: `http://localhost:3001/clientes` 🔒
+- **☕ Productos**: `http://localhost:3001/productos` 🔒
+- **📦 Inventario**: `http://localhost:3001/inventario` 🔒
+- **🛒 Compras**: `http://localhost:3001/compras` 🔒
+- **💰 Gastos**: `http://localhost:3001/gastos` 🔒👑 (solo administradores)
+- **📊 Reportes**: `http://localhost:3001/reportes` 🔒
+- **⚙️ Configuración**: `http://localhost:3001/configuracion` 🔒👑 (solo administradores)
+
+> **🔒 Rutas Protegidas**: Todas las rutas marcadas requieren autenticación
+> **👑 Solo Administradores**: Gastos y Configuración requieren permisos de administrador
 
 ### 5. Construir para producción
 ```bash
@@ -242,10 +257,11 @@ npm run db:seed         # Poblar con datos de ejemplo
 ## 🌟 Características Destacadas
 
 ### 🔐 Sistema de Autenticación
-- ✅ **Sistema de autenticación simplificado** para desarrollo
-- ✅ Auto-login en modo desarrollo con usuario administrador
-- ✅ Bypass de autenticación activo para pruebas
-- ✅ Usuario mock: "Administrador" (admin@tintomirador.com)
+- ✅ **Sistema de autenticación robusto** con NextAuth.js
+- ✅ Protección completa de todas las rutas sensibles
+- ✅ Modal de login automático para usuarios no autenticados
+- ✅ Soporte para roles de usuario (Administrador y Vendedor)
+- ✅ Credenciales de demo integradas y funcionales
 
 ### 🎨 Interfaz de Usuario
 - ✅ **Diseño consistente** con tema café/mirador
@@ -291,10 +307,10 @@ npm start
 
 ### 🔗 Conectar Servicios Reales
 1. **Base de datos**: Configurar PostgreSQL para datos persistentes
-2. **Firebase**: Implementar autenticación y almacenamiento
-3. **APIs**: Conectar endpoints para funcionalidad completa
-4. **Gemini AI**: Configurar para insights reales
-5. **PWA**: Habilitar para funcionalidad offline
+2. **APIs**: Conectar endpoints para funcionalidad completa
+3. **Gemini AI**: Configurar para insights reales
+4. **PWA**: Habilitar para funcionalidad offline
+5. **Usuarios**: Migrar de credenciales demo a registro real
 
 ### 📈 Optimizaciones Recomendadas
 1. **Rendimiento**: Optimizar carga de componentes

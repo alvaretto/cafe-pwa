@@ -19,8 +19,10 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "db:init-demo": "node scripts/init-demo-users.js",
     "port:check": "node scripts/check-port.js",
     "port:info": "node port.config.js",
+    "port:verify": "node scripts/verify-port-config.js",
     "port:kill": "kill -9 $(lsof -ti:3001) 2>/dev/null || echo 'Puerto 3001 no está en uso'",
     "dev:safe": "npm run port:check && npm run dev"
   },

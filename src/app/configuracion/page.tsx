@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { ProtectedRoute } from '@/components/auth/protected-route'
 import { ConfigPageClient } from '@/components/configuracion/config-page-client'
 
 export const metadata: Metadata = {
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 }
 
 export default function ConfigPage() {
-  return <ConfigPageClient />
+  return (
+    <ProtectedRoute requireAdmin={true}>
+      <ConfigPageClient />
+    </ProtectedRoute>
+  )
 }

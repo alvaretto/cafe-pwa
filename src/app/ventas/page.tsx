@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { ProtectedRoute } from '@/components/auth/protected-route'
 import { SalesPageClient } from '@/components/ventas/sales-page-client'
 
 export const metadata: Metadata = {
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 }
 
 export default function SalesPage() {
-  return <SalesPageClient />
+  return (
+    <ProtectedRoute>
+      <SalesPageClient />
+    </ProtectedRoute>
+  )
 }

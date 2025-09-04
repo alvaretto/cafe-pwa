@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { ProtectedRoute } from '@/components/auth/protected-route'
 import { ReportsPageClient } from '@/components/reportes/reports-page-client'
 
 export const metadata: Metadata = {
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 }
 
 export default function ReportsPage() {
-  return <ReportsPageClient />
+  return (
+    <ProtectedRoute>
+      <ReportsPageClient />
+    </ProtectedRoute>
+  )
 }

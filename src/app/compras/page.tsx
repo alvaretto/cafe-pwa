@@ -1,11 +1,12 @@
 import { Metadata } from 'next'
+import { ProtectedRoute } from '@/components/auth/protected-route'
 
 export const metadata: Metadata = {
   title: 'Compras - Tinto del Mirador CRM',
   description: 'Gestión de compras de inventario y proveedores',
 }
 
-export default function PurchasesPage() {
+function PurchasesContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
@@ -53,5 +54,13 @@ export default function PurchasesPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function PurchasesPage() {
+  return (
+    <ProtectedRoute>
+      <PurchasesContent />
+    </ProtectedRoute>
   )
 }

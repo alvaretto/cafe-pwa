@@ -8,10 +8,10 @@ async function main() {
 
   // Crear usuario administrador
   const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@tintodel mirador.com' },
+    where: { email: 'admin@tintodel-mirador.com' },
     update: {},
     create: {
-      email: 'admin@tintodel mirador.com',
+      email: 'admin@tintodel-mirador.com',
       name: 'Administrador',
       role: 'ADMIN',
       isActive: true,
@@ -23,10 +23,10 @@ async function main() {
 
   // Crear usuarios vendedores
   const vendedor1 = await prisma.user.upsert({
-    where: { email: 'vendedor1@tintodel mirador.com' },
+    where: { email: 'vendedor1@tintodel-mirador.com' },
     update: {},
     create: {
-      email: 'vendedor1@tintodel mirador.com',
+      email: 'vendedor1@tintodel-mirador.com',
       name: 'María González',
       role: 'VENDEDOR',
       isActive: true,
@@ -37,10 +37,10 @@ async function main() {
   })
 
   const vendedor2 = await prisma.user.upsert({
-    where: { email: 'vendedor2@tintodel mirador.com' },
+    where: { email: 'vendedor2@tintodel-mirador.com' },
     update: {},
     create: {
-      email: 'vendedor2@tintodel mirador.com',
+      email: 'vendedor2@tintodel-mirador.com',
       name: 'Carlos Rodríguez',
       role: 'VENDEDOR',
       isActive: true,
@@ -51,10 +51,10 @@ async function main() {
   })
 
   const vendedor3 = await prisma.user.upsert({
-    where: { email: 'vendedor3@tintodel mirador.com' },
+    where: { email: 'vendedor3@tintodel-mirador.com' },
     update: {},
     create: {
-      email: 'vendedor3@tintodel mirador.com',
+      email: 'vendedor3@tintodel-mirador.com',
       name: 'Ana Martínez',
       role: 'VENDEDOR',
       isActive: true,
@@ -242,7 +242,7 @@ async function main() {
     { key: 'loyalty_points_rate', value: '1', description: 'Puntos por cada 1000 COP gastados', category: 'loyalty', isPublic: false },
     { key: 'low_stock_threshold', value: '100', description: 'Umbral de stock bajo (gramos)', category: 'inventory', isPublic: false },
     { key: 'backup_frequency', value: 'daily', description: 'Frecuencia de backup', category: 'system', isPublic: false },
-    { key: 'notification_email', value: 'admin@tintodel mirador.com', description: 'Email para notificaciones del sistema', category: 'notifications', isPublic: false },
+    { key: 'notification_email', value: 'admin@tintodel-mirador.com', description: 'Email para notificaciones del sistema', category: 'notifications', isPublic: false },
   ]
 
   for (const config of configuraciones) {

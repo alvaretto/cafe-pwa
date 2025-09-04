@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Coffee, BarChart3, Users, Package, Shield, Smartphone, Zap, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AuthModalSimple } from '@/components/auth/auth-modal-simple'
 
 export function LandingPageSimple() {
-  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(true) // Mostrar modal por defecto
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
 
   const handleGetStarted = () => {
