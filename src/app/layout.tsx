@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import '@/styles/globals.css'
-import { AuthSessionProvider } from '@/components/auth/session-provider'
+import { Providers } from '@/components/providers'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -176,13 +176,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <meta name="theme-color" content="#d97706" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <AuthSessionProvider>
+        <Providers>
           <div className="relative flex min-h-screen flex-col">
             <div className="flex-1">
               {children}
             </div>
           </div>
-        </AuthSessionProvider>
+        </Providers>
       </body>
     </html>
   )

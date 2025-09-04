@@ -77,11 +77,19 @@ export function ConfigContent({ user }: ConfigContentProps) {
 
   const handleUserPreferencesChange = (preferences: Partial<UserPreferences>) => {
     if (userPreferences) {
-      setUserPreferences(prev => ({
-        ...prev!,
+      const updatedPreferences = {
+        ...userPreferences,
         ...preferences,
         updatedAt: new Date()
-      }))
+      }
+
+      // Actualizar el estado local
+      setUserPreferences(updatedPreferences)
+
+      // Guardar inmediatamente en localStorage
+      updateUserPreferences(user.id, updatedPreferences)
+
+      console.log('✅ User preferences updated immediately:', updatedPreferences)
       setHasChanges(true)
     }
   }

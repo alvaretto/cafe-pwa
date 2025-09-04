@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useTheme } from 'next-themes'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -33,6 +34,7 @@ import {
   Database
 } from 'lucide-react'
 import { SystemConfig, UserPreferences } from '@/lib/mock-data'
+import { useUserPreferences } from '@/hooks/use-user-preferences'
 
 // Header de configuración
 interface ConfigHeaderProps {
@@ -441,6 +443,18 @@ interface UserSettingsProps {
 }
 
 export function UserSettings({ preferences, onPreferencesChange, isLoading }: UserSettingsProps) {
+  const { setTheme } = useTheme()
+
+  // Función para manejar cambios de tema con sincronización inmediata
+  const handleThemeChange = (newTheme: 'light' | 'dark' | 'auto') => {
+    // Actualizar el tema inmediatamente en next-themes
+    setTheme(newTheme)
+
+    // Actualizar las preferencias del usuario
+    onPreferencesChange({ theme: newTheme })
+
+    console.log('🎨 Theme changed to:', newTheme)
+  }
   if (isLoading) {
     return (
       <Card className="bg-white shadow-sm">
@@ -481,7 +495,7 @@ export function UserSettings({ preferences, onPreferencesChange, isLoading }: Us
               <Label htmlFor="theme">Tema</Label>
               <Select
                 value={preferences.theme}
-                onValueChange={(value) => onPreferencesChange({ theme: value as any })}
+                onValueChange={(value) => handleThemeChange(value as 'light' | 'dark' | 'auto')}
               >
                 <SelectTrigger>
                   <SelectValue />

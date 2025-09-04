@@ -2277,7 +2277,24 @@ export function updateConfigValue(key: string, value: any, updatedBy: string): b
 }
 
 export function getUserPreferences(userId: string): UserPreferences {
-  // En una implementación real, esto vendría de la base de datos
+  // Intentar cargar desde localStorage
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem(`tinto-user-preferences-${userId}`)
+      if (stored) {
+        const parsedPreferences = JSON.parse(stored)
+        return {
+          userId,
+          ...DEFAULT_USER_PREFERENCES,
+          ...parsedPreferences,
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user preferences from localStorage:', error)
+    }
+  }
+
+  // Si no hay preferencias guardadas, devolver las por defecto
   return {
     userId,
     ...DEFAULT_USER_PREFERENCES,
@@ -2285,9 +2302,29 @@ export function getUserPreferences(userId: string): UserPreferences {
 }
 
 export function updateUserPreferences(userId: string, preferences: Partial<UserPreferences>): boolean {
-  // En una implementación real, esto actualizaría la base de datos
-  console.log('Updating user preferences:', { userId, preferences })
-  return true
+  try {
+    // Obtener preferencias actuales
+    const currentPreferences = getUserPreferences(userId)
+
+    // Combinar con las nuevas preferencias
+    const updatedPreferences: UserPreferences = {
+      ...currentPreferences,
+      ...preferences,
+      userId,
+      updatedAt: new Date(),
+    }
+
+    // Guardar en localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`tinto-user-preferences-${userId}`, JSON.stringify(updatedPreferences))
+      console.log('✅ User preferences updated and saved to localStorage:', updatedPreferences)
+    }
+
+    return true
+  } catch (error) {
+    console.error('❌ Error updating user preferences:', error)
+    return false
+  }
 }
 
 export function getConfigCategories() {
