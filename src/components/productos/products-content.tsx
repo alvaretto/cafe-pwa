@@ -143,6 +143,10 @@ export function ProductsContent({ user }: ProductsContentProps) {
     }
   }
 
+  const handleModeChange = (newMode: 'view' | 'edit' | 'create') => {
+    setModalMode(newMode)
+  }
+
   const stats = getProductStats()
 
   return (
@@ -200,6 +204,7 @@ export function ProductsContent({ user }: ProductsContentProps) {
         categories={categories}
         onSave={handleSaveProduct}
         onDelete={handleDeleteProduct}
+        onModeChange={handleModeChange}
       />
     </div>
   )

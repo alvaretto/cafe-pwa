@@ -32,6 +32,7 @@ interface ProductModalProps {
   categories: Category[]
   onSave: (productData: Partial<Product>) => void
   onDelete: (productId: string) => void
+  onModeChange?: (mode: 'view' | 'edit' | 'create') => void
 }
 
 export function ProductModal({
@@ -42,6 +43,7 @@ export function ProductModal({
   categories,
   onSave,
   onDelete,
+  onModeChange,
 }: ProductModalProps) {
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
@@ -197,11 +199,11 @@ export function ProductModal({
               {getModalTitle()}
             </DialogTitle>
             <div className="flex items-center space-x-2">
-              {mode === 'view' && (
+              {mode === 'view' && onModeChange && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {/* Switch to edit mode */}}
+                  onClick={() => onModeChange('edit')}
                 >
                   <Edit className="h-4 w-4 mr-2" />
                   Editar
