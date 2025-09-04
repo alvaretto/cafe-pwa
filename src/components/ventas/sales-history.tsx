@@ -14,11 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  Eye, 
+import {
+  Search,
+  Filter,
+  Download,
+  Eye,
   Calendar,
   DollarSign,
   User,
@@ -28,10 +28,14 @@ import {
   FileText,
   Printer,
   BarChart,
-  TrendingUp
+  TrendingUp,
+  Edit,
+  Trash2
 } from 'lucide-react'
 import { Sale, MOCK_SALES, MOCK_CUSTOMERS } from '@/lib/mock-data'
 import { SaleDetailModal } from './sale-detail-modal'
+import { EditSaleModal } from './edit-sale-modal'
+import { DeleteSaleModal } from './delete-sale-modal'
 
 interface SalesHistoryProps {
   isLoading?: boolean
@@ -43,6 +47,8 @@ export function SalesHistory({ isLoading = false }: SalesHistoryProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   
   // Filtros
   const [dateFrom, setDateFrom] = useState('')
@@ -229,6 +235,34 @@ export function SalesHistory({ isLoading = false }: SalesHistoryProps) {
   const handleViewSale = (sale: Sale) => {
     setSelectedSale(sale)
     setShowDetailModal(true)
+  }
+
+  const handleEditSale = (sale: Sale) => {
+    setSelectedSale(sale)
+    setShowEditModal(true)
+  }
+
+  const handleDeleteSale = (sale: Sale) => {
+    setSelectedSale(sale)
+    setShowDeleteModal(true)
+  }
+
+  const handleSaveEdit = (updatedSale: Sale) => {
+    // Actualizar la venta en el estado local
+    const updatedSales = sales.map(sale =>
+      sale.id === updatedSale.id ? updatedSale : sale
+    )
+    setSales(updatedSales)
+    setShowEditModal(false)
+    setSelectedSale(null)
+  }
+
+  const handleConfirmDelete = (saleId: string) => {
+    // Eliminar la venta del estado local
+    const updatedSales = sales.filter(sale => sale.id !== saleId)
+    setSales(updatedSales)
+    setShowDeleteModal(false)
+    setSelectedSale(null)
   }
 
   const handleExportData = () => {
@@ -665,20 +699,40 @@ export function SalesHistory({ isLoading = false }: SalesHistoryProps) {
                       <div className="text-gray-900">{sale.sellerName}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleViewSale(sale)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          title="Ver detalles"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
+                          onClick={() => handleEditSale(sale)}
+                          className="h-8 w-8 p-0 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                          title="Editar venta"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteSale(sale)}
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          title="Eliminar venta"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handlePrintSale(sale)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 p-0 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                          title="Imprimir"
                         >
                           <Printer className="h-4 w-4" />
                         </Button>
@@ -755,6 +809,32 @@ export function SalesHistory({ isLoading = false }: SalesHistoryProps) {
           isOpen={showDetailModal}
           onClose={() => setShowDetailModal(false)}
           sale={selectedSale}
+        />
+      )}
+
+      {/* Modal de edición de venta */}
+      {selectedSale && (
+        <EditSaleModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false)
+            setSelectedSale(null)
+          }}
+          sale={selectedSale}
+          onSave={handleSaveEdit}
+        />
+      )}
+
+      {/* Modal de confirmación de eliminación */}
+      {selectedSale && (
+        <DeleteSaleModal
+          isOpen={showDeleteModal}
+          onClose={() => {
+            setShowDeleteModal(false)
+            setSelectedSale(null)
+          }}
+          sale={selectedSale}
+          onConfirm={handleConfirmDelete}
         />
       )}
     </div>
