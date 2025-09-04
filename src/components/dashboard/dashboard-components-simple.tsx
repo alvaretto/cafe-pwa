@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -24,6 +26,7 @@ import {
   Rocket
 } from 'lucide-react'
 import { DeploymentPanelCompact } from './deployment-panel'
+import { QuickConfigModal } from './quick-config-modal'
 
 // Gráfico de ventas simplificado
 export function SalesChartSimple({ isLoading }: { isLoading: boolean }) {
@@ -283,6 +286,7 @@ export function AIInsightsSimple({ isLoading }: { isLoading: boolean }) {
 
 // Acciones rápidas
 export function QuickActionsSimple({ user }: { user?: any }) {
+  const [showConfigModal, setShowConfigModal] = useState(false)
   const isAdmin = user?.role === 'ADMIN'
 
   const actions = [
@@ -295,6 +299,7 @@ export function QuickActionsSimple({ user }: { user?: any }) {
   ]
 
   return (
+    <>
     <Card className="bg-white shadow-sm">
       <CardHeader>
         <CardTitle className="text-lg font-semibold flex items-center">
@@ -311,7 +316,13 @@ export function QuickActionsSimple({ user }: { user?: any }) {
                 key={action.id}
                 variant="ghost"
                 className="h-auto p-3 flex flex-col items-center space-y-2 hover:bg-gray-50 transition-colors"
-                onClick={() => alert(`Funcionalidad "${action.title}" próximamente`)}
+                onClick={() => {
+                  if (action.id === 'settings') {
+                    setShowConfigModal(true)
+                  } else {
+                    alert(`Funcionalidad "${action.title}" próximamente`)
+                  }
+                }}
               >
                 <div className={`p-2 rounded-full ${action.bgColor}`}>
                   <Icon className={`h-5 w-5 ${action.color}`} />
@@ -328,5 +339,12 @@ export function QuickActionsSimple({ user }: { user?: any }) {
         </div>
       </CardContent>
     </Card>
+
+    {/* Modal de configuración rápida */}
+    <QuickConfigModal
+      open={showConfigModal}
+      onOpenChange={setShowConfigModal}
+    />
+  </>
   )
 }

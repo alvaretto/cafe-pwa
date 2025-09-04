@@ -19,22 +19,24 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  AlertTriangle, 
-  Rocket, 
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  AlertTriangle,
+  Rocket,
   ExternalLink,
   Download,
   X,
   Settings,
-  Play
+  Play,
+  FileText
 } from 'lucide-react'
 import { DeploymentConfig } from '@/types/deployment'
 import { useDeployment } from '@/hooks/use-deployment'
 import { useDeploymentConfig } from '@/hooks/use-deployment-config'
 import { DeploymentLogs } from './deployment-logs'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 
 interface DeploymentModalProps {
@@ -75,6 +77,7 @@ const DEPLOYMENT_STEPS = [
 ]
 
 export function DeploymentModal({ open, onOpenChange, onDeploy }: DeploymentModalProps) {
+  const [activeTab, setActiveTab] = useState<'config' | 'logs' | 'history'>('config')
   const [currentView, setCurrentView] = useState<'config' | 'confirm' | 'deploy' | 'result'>('config')
   const [confirmationChecked, setConfirmationChecked] = useState(false)
   const [selectedConfig, setSelectedConfig] = useState<DeploymentConfig | null>(null)
@@ -107,15 +110,18 @@ export function DeploymentModal({ open, onOpenChange, onDeploy }: DeploymentModa
   // Resetear estado cuando se abre el modal
   useEffect(() => {
     if (open) {
+      setActiveTab('config')
       setCurrentView(hasConfigs ? 'config' : 'config')
       setConfirmationChecked(false)
       setSelectedConfig(activeConfig)
-      
+
       if (state.status !== 'idle') {
         if (isDeploying) {
           setCurrentView('deploy')
+          setActiveTab('logs')
         } else if (hasError || isSuccess) {
           setCurrentView('result')
+          setActiveTab('logs')
         }
       }
     }
@@ -128,6 +134,7 @@ export function DeploymentModal({ open, onOpenChange, onDeploy }: DeploymentModa
     if (!selectedConfig) return
 
     setCurrentView('deploy')
+    setActiveTab('logs')
     deploy(selectedConfig)
     onDeploy?.(selectedConfig)
   }
@@ -164,6 +171,69 @@ export function DeploymentModal({ open, onOpenChange, onDeploy }: DeploymentModa
   }
 
   const currentStepIndex = getCurrentStepIndex()
+
+  /**
+   * Renderiza el historial de deployments
+   */
+  const renderHistoryView = () => (
+    <div className="space-y-4">
+      <div className="text-center">
+        <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Historial de Deployments</h3>
+        <p className="text-gray-600">
+          Registro de deployments anteriores y su estado
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {/* Ejemplo de historial - en una implementación real vendría de una API */}
+        <div className="p-4 border rounded-lg bg-green-50 border-green-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="font-medium">Deployment exitoso</p>
+                <p className="text-sm text-gray-600">hace 2 horas</p>
+              </div>
+            </div>
+            <Badge variant="secondary" className="bg-green-100 text-green-800">
+              v1.2.3
+            </Badge>
+          </div>
+        </div>
+
+        <div className="p-4 border rounded-lg bg-red-50 border-red-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <XCircle className="h-5 w-5 text-red-600" />
+              <div>
+                <p className="font-medium">Deployment fallido</p>
+                <p className="text-sm text-gray-600">hace 1 día</p>
+              </div>
+            </div>
+            <Badge variant="secondary" className="bg-red-100 text-red-800">
+              v1.2.2
+            </Badge>
+          </div>
+        </div>
+
+        <div className="p-4 border rounded-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="font-medium">Deployment exitoso</p>
+                <p className="text-sm text-gray-600">hace 3 días</p>
+              </div>
+            </div>
+            <Badge variant="secondary">
+              v1.2.1
+            </Badge>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 
   /**
    * Renderiza la vista de configuración
@@ -587,14 +657,50 @@ export function DeploymentModal({ open, onOpenChange, onDeploy }: DeploymentModa
           </div>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-120px)]">
-          <div className="p-6">
-            {currentView === 'config' && renderConfigView()}
-            {currentView === 'confirm' && renderConfirmView()}
-            {currentView === 'deploy' && renderDeployView()}
-            {currentView === 'result' && renderResultView()}
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'config' | 'logs' | 'history')}>
+          <div className="px-6 pb-2">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="config" className="flex items-center space-x-2">
+                <Settings className="h-4 w-4" />
+                <span>Configuración</span>
+              </TabsTrigger>
+              <TabsTrigger value="logs" className="flex items-center space-x-2">
+                <FileText className="h-4 w-4" />
+                <span>Logs</span>
+              </TabsTrigger>
+              <TabsTrigger value="history" className="flex items-center space-x-2">
+                <Clock className="h-4 w-4" />
+                <span>Historial</span>
+              </TabsTrigger>
+            </TabsList>
           </div>
-        </ScrollArea>
+
+          <ScrollArea className="max-h-[calc(90vh-180px)]">
+            <div className="p-6 pt-2">
+              <TabsContent value="config" className="mt-0">
+                {currentView === 'config' && renderConfigView()}
+                {currentView === 'confirm' && renderConfirmView()}
+              </TabsContent>
+
+              <TabsContent value="logs" className="mt-0">
+                {(currentView === 'deploy' || currentView === 'result') && renderDeployView()}
+                {currentView === 'result' && renderResultView()}
+                {currentView === 'config' && (
+                  <div className="text-center py-8">
+                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">
+                      Los logs aparecerán aquí durante el deployment
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="history" className="mt-0">
+                {renderHistoryView()}
+              </TabsContent>
+            </div>
+          </ScrollArea>
+        </Tabs>
       </DialogContent>
     </Dialog>
   )
