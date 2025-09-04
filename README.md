@@ -150,7 +150,7 @@ Copia el archivo `.env.local` existente o crea uno nuevo:
 DATABASE_URL="postgresql://username:password@localhost:5432/tinto_del_mirador"
 
 # NextAuth.js
-NEXTAUTH_URL="http://localhost:3002"
+NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="tu-secret-super-seguro-aqui"
 
 # Firebase (opcional)
@@ -162,22 +162,36 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID="tu-proyecto-id"
 GEMINI_API_KEY="tu-gemini-api-key"
 
 # App Configuration
-NEXT_PUBLIC_APP_URL="http://localhost:3002"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 NEXT_PUBLIC_APP_NAME="Tinto del Mirador CRM"
 ```
 
 ### 4. Ejecutar en modo desarrollo
 ```bash
-# Ejecutar en puerto 3002
-PORT=3002 npm run dev
-
-# O usar el puerto por defecto (3000)
+# Ejecutar en puerto por defecto (recomendado)
 npm run dev
+
+# O usar un puerto específico
+PORT=3002 npm run dev
 ```
 
 La aplicación estará disponible en:
-- **Puerto 3002**: `http://localhost:3002` (recomendado)
-- **Puerto 3000**: `http://localhost:3000` (por defecto)
+- **Puerto 3000**: `http://localhost:3000` (por defecto - recomendado)
+- **Puerto personalizado**: `http://localhost:[PUERTO]` (si usas PORT=XXXX)
+
+#### 🌐 URLs de Acceso a los Módulos
+Una vez que la aplicación esté ejecutándose, puedes acceder a:
+
+- **🏠 Página Principal**: `http://localhost:3000`
+- **📊 Dashboard**: `http://localhost:3000/dashboard`
+- **🛍️ Ventas**: `http://localhost:3000/ventas`
+- **👥 Clientes**: `http://localhost:3000/clientes`
+- **☕ Productos**: `http://localhost:3000/productos`
+- **📦 Inventario**: `http://localhost:3000/inventario`
+- **🛒 Compras**: `http://localhost:3000/compras`
+- **💰 Gastos**: `http://localhost:3000/gastos`
+- **📊 Reportes**: `http://localhost:3000/reportes`
+- **⚙️ Configuración**: `http://localhost:3000/configuracion`
 
 ### 5. Construir para producción
 ```bash
