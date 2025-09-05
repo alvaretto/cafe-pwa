@@ -9,11 +9,11 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { 
-  Package, 
-  AlertTriangle, 
-  TrendingUp, 
-  DollarSign, 
+import {
+  Package,
+  AlertTriangle,
+  TrendingUp,
+  DollarSign,
   BarChart3,
   Eye,
   Edit,
@@ -29,7 +29,8 @@ import {
   AlertCircle,
   Activity,
   Users,
-  Calendar
+  Calendar,
+  Calculator
 } from 'lucide-react'
 import { Product, InventoryMovement, StockAlert, Supplier } from '@/lib/mock-data'
 import { formatCurrency, formatDate, formatDateTime, formatDualStock, formatCompactDualStock } from '@/lib/utils'
@@ -167,7 +168,7 @@ export function InventoryStats({ stats, isLoading }: InventoryStatsProps) {
 // Tabs de navegación
 interface InventoryTabsProps {
   activeTab: string
-  onTabChange: (tab: 'overview' | 'alerts' | 'movements' | 'restock' | 'suppliers') => void
+  onTabChange: (tab: 'overview' | 'alerts' | 'movements' | 'restock' | 'suppliers' | 'accounting') => void
   alertsCount: number
   restockCount: number
 }
@@ -179,6 +180,7 @@ export function InventoryTabs({ activeTab, onTabChange, alertsCount, restockCoun
     { id: 'movements', label: 'Movimientos', icon: Activity },
     { id: 'restock', label: 'Reabastecimiento', icon: ShoppingCart, badge: restockCount },
     { id: 'suppliers', label: 'Proveedores', icon: Truck },
+    { id: 'accounting', label: 'Contabilidad', icon: Calculator },
   ]
 
   return (

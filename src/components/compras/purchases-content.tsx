@@ -22,6 +22,7 @@ import {
   EditPurchaseModal,
   DeletePurchaseModal
 } from './purchases-components'
+import { PurchasesAccounting } from './purchases-accounting'
 
 interface PurchasesContentProps {
   user: User
@@ -32,7 +33,7 @@ export function PurchasesContent({ user }: PurchasesContentProps) {
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [purchases, setPurchases] = useState<InventoryMovement[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'overview' | 'new' | 'history' | 'suppliers'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'new' | 'history' | 'suppliers' | 'accounting'>('overview')
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [selectedPurchase, setSelectedPurchase] = useState<InventoryMovement | null>(null)
@@ -284,6 +285,10 @@ export function PurchasesContent({ user }: PurchasesContentProps) {
             suppliers={suppliers}
             isLoading={isLoading}
           />
+        )}
+
+        {activeTab === 'accounting' && (
+          <PurchasesAccounting />
         )}
       </div>
 

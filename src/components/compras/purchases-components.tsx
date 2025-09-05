@@ -30,7 +30,8 @@ import {
   CheckCircle,
   Edit,
   Trash2,
-  MoreVertical
+  MoreVertical,
+  Calculator
 } from 'lucide-react'
 import { Product, Supplier, InventoryMovement } from '@/lib/mock-data'
 
@@ -166,7 +167,7 @@ export function PurchasesStats({ stats, isLoading }: PurchasesStatsProps) {
 // Tabs de navegación
 interface PurchasesTabsProps {
   activeTab: string
-  onTabChange: (tab: 'overview' | 'new' | 'history' | 'suppliers') => void
+  onTabChange: (tab: 'overview' | 'new' | 'history' | 'suppliers' | 'accounting') => void
   purchasesCount: number
   suppliersCount: number
 }
@@ -201,6 +202,12 @@ export function PurchasesTabs({
       label: 'Proveedores',
       icon: Truck,
       count: suppliersCount
+    },
+    {
+      id: 'accounting',
+      label: 'Contabilidad',
+      icon: Calculator,
+      count: null
     }
   ]
 

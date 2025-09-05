@@ -15,9 +15,9 @@ import {
   generateRestockSuggestions
 } from '@/lib/mock-data'
 import { DashboardHeaderSimple } from '@/components/dashboard/dashboard-header-simple'
-import { 
-  InventoryHeader, 
-  InventoryStats, 
+import {
+  InventoryHeader,
+  InventoryStats,
   InventoryTabs,
   StockOverview,
   AlertsPanel,
@@ -25,6 +25,7 @@ import {
   RestockSuggestions,
   SuppliersManagement
 } from './inventory-components'
+import { InventoryAccounting } from './inventory-accounting'
 
 interface InventoryContentProps {
   user: User
@@ -37,7 +38,7 @@ export function InventoryContent({ user }: InventoryContentProps) {
   const [alerts, setAlerts] = useState<StockAlert[]>([])
   const [restockSuggestions, setRestockSuggestions] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'overview' | 'alerts' | 'movements' | 'restock' | 'suppliers'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'alerts' | 'movements' | 'restock' | 'suppliers' | 'accounting'>('overview')
 
   useEffect(() => {
     loadInventoryData()
@@ -177,6 +178,10 @@ export function InventoryContent({ user }: InventoryContentProps) {
             suppliers={suppliers}
             isLoading={isLoading}
           />
+        )}
+
+        {activeTab === 'accounting' && (
+          <InventoryAccounting />
         )}
       </div>
     </div>

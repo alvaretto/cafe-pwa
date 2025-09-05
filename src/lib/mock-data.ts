@@ -1,5 +1,17 @@
 // Datos simulados para la aplicación
 import { ExpenseCategory } from '@/types'
+import {
+  AccountingEntry,
+  InventoryAccountingMovement,
+  InventoryValuation,
+  ExpenseClassification,
+  DocumentType,
+  EntryStatus,
+  InventoryMovementType,
+  ValuationMethod,
+  ExpenseClassificationType
+} from '@/types/accounting'
+import { PUC_ACCOUNTS, ExpenseClassifier } from '@/lib/accounting-utils'
 
 export interface Product {
   id: string
@@ -1321,6 +1333,7 @@ export const MOCK_EXPENSES: Expense[] = [
     amount: 85000,
     date: new Date('2024-01-22'),
     paymentMethod: 'efectivo',
+    isRecurring: false,
     tags: ['combustible', 'reparto'],
     userId: '2',
     userName: 'María González',
@@ -2268,9 +2281,12 @@ export function getConfigValue(key: string): any {
 export function updateConfigValue(key: string, value: any, updatedBy: string): boolean {
   const configIndex = MOCK_SYSTEM_CONFIG.findIndex(c => c.key === key)
   if (configIndex !== -1) {
-    MOCK_SYSTEM_CONFIG[configIndex].value = value
-    MOCK_SYSTEM_CONFIG[configIndex].updatedBy = updatedBy
-    MOCK_SYSTEM_CONFIG[configIndex].updatedAt = new Date()
+    const config = MOCK_SYSTEM_CONFIG[configIndex]
+    if (config) {
+      config.value = value
+      config.updatedBy = updatedBy
+      config.updatedAt = new Date()
+    }
     return true
   }
   return false
@@ -2299,9 +2315,9 @@ export function getUserPreferences(userId: string): UserPreferences {
         const deserializedPreferences = deserializeUserPreferences(parsedPreferences)
 
         return {
-          userId,
           ...DEFAULT_USER_PREFERENCES,
           ...deserializedPreferences,
+          userId,
         }
       }
     } catch (error) {
@@ -2311,8 +2327,8 @@ export function getUserPreferences(userId: string): UserPreferences {
 
   // Si no hay preferencias guardadas, devolver las por defecto
   return {
-    userId,
     ...DEFAULT_USER_PREFERENCES,
+    userId,
     updatedAt: new Date(),
   }
 }
@@ -2347,7 +2363,7 @@ export function updateUserPreferences(userId: string, preferences: Partial<UserP
 }
 
 export function getConfigCategories() {
-  const categories = [...new Set(MOCK_SYSTEM_CONFIG.map(c => c.category))]
+  const categories = Array.from(new Set(MOCK_SYSTEM_CONFIG.map(c => c.category)))
   return categories.map(category => ({
     id: category,
     name: getCategoryName(category),
@@ -2413,13 +2429,23 @@ export function updateExpenseCategory(id: string, updates: Partial<ExpenseCatego
   const index = MOCK_EXPENSE_CATEGORIES.findIndex(category => category.id === id)
   if (index === -1) return null
 
-  MOCK_EXPENSE_CATEGORIES[index] = {
-    ...MOCK_EXPENSE_CATEGORIES[index],
-    ...updates,
+  const currentCategory = MOCK_EXPENSE_CATEGORIES[index]
+  if (!currentCategory) return null
+
+  const updatedCategory: ExpenseCategory = {
+    id: currentCategory.id,
+    name: currentCategory.name,
+    color: currentCategory.color,
+    isActive: currentCategory.isActive,
+    createdAt: currentCategory.createdAt,
     updatedAt: new Date(),
+    ...(currentCategory.description && { description: currentCategory.description }),
+    ...(currentCategory.monthlyBudget && { monthlyBudget: currentCategory.monthlyBudget }),
+    ...updates,
   }
 
-  return MOCK_EXPENSE_CATEGORIES[index]
+  MOCK_EXPENSE_CATEGORIES[index] = updatedCategory
+  return updatedCategory
 }
 
 export function deleteExpenseCategory(id: string): boolean {
@@ -2535,13 +2561,236 @@ export function verifyCustomerClassification() {
   return inconsistencies
 }
 
+// ============================================================================
+// DATOS CONTABLES SEGÚN PUC 2025
+// ============================================================================
+
+// Datos simulados de asientos contables
+export const MOCK_ACCOUNTING_ENTRIES: AccountingEntry[] = [
+  {
+    id: '1',
+    entryNumber: 'COMP-2024-001',
+    date: new Date('2024-01-25'),
+    description: 'Compra de inventario a Café del Valle S.A.S. - Factura FAC-2024-001',
+    reference: 'FAC-2024-001',
+    documentType: DocumentType.FACTURA_COMPRA,
+    documentNumber: 'FAC-2024-001',
+    totalDebit: 750000,
+    totalCredit: 750000,
+    isBalanced: true,
+    status: EntryStatus.APROBADO,
+    userId: '1',
+    userName: 'Administrador',
+    approvedBy: 'Administrador',
+    approvedAt: new Date('2024-01-25'),
+    details: [
+      {
+        id: '1-1',
+        entryId: '1',
+        accountId: 'acc_inventario',
+        accountCode: PUC_ACCOUNTS.INVENTARIO_MERCANCIAS,
+        accountName: 'Inventario de Mercancías',
+        debitAmount: 750000,
+        creditAmount: 0,
+        description: 'Compra de inventario según factura FAC-2024-001',
+        reference: 'FAC-2024-001',
+        thirdPartyId: '1',
+        thirdPartyName: 'Café del Valle S.A.S.',
+        createdAt: new Date('2024-01-25')
+      },
+      {
+        id: '1-2',
+        entryId: '1',
+        accountId: 'acc_proveedores',
+        accountCode: PUC_ACCOUNTS.PROVEEDORES_NACIONALES,
+        accountName: 'Proveedores Nacionales',
+        debitAmount: 0,
+        creditAmount: 750000,
+        description: 'Compra a crédito según factura FAC-2024-001',
+        reference: 'FAC-2024-001',
+        thirdPartyId: '1',
+        thirdPartyName: 'Café del Valle S.A.S.',
+        createdAt: new Date('2024-01-25')
+      }
+    ],
+    createdAt: new Date('2024-01-25'),
+    updatedAt: new Date('2024-01-25')
+  },
+  {
+    id: '2',
+    entryNumber: 'VTA-2024-001',
+    date: new Date('2024-01-25'),
+    description: 'Venta a Ana Martínez - VTA-2024-001',
+    reference: 'VTA-2024-001',
+    documentType: DocumentType.FACTURA_VENTA,
+    documentNumber: 'VTA-2024-001',
+    totalDebit: 65000,
+    totalCredit: 65000,
+    isBalanced: true,
+    status: EntryStatus.APROBADO,
+    userId: '1',
+    userName: 'Administrador',
+    details: [
+      {
+        id: '2-1',
+        entryId: '2',
+        accountId: 'acc_caja',
+        accountCode: PUC_ACCOUNTS.CAJA,
+        accountName: 'Caja',
+        debitAmount: 50000,
+        creditAmount: 0,
+        description: 'Venta según VTA-2024-001',
+        reference: 'VTA-2024-001',
+        thirdPartyId: '1',
+        thirdPartyName: 'Ana Martínez',
+        createdAt: new Date('2024-01-25')
+      },
+      {
+        id: '2-2',
+        entryId: '2',
+        accountId: 'acc_ingresos_ventas',
+        accountCode: '4135',
+        accountName: 'Ingresos por Ventas',
+        debitAmount: 0,
+        creditAmount: 50000,
+        description: 'Venta según VTA-2024-001',
+        reference: 'VTA-2024-001',
+        thirdPartyId: '1',
+        thirdPartyName: 'Ana Martínez',
+        createdAt: new Date('2024-01-25')
+      },
+      {
+        id: '2-3',
+        entryId: '2',
+        accountId: 'acc_costo_ventas',
+        accountCode: PUC_ACCOUNTS.COSTO_VENTAS,
+        accountName: 'Costo de Ventas',
+        debitAmount: 15000,
+        creditAmount: 0,
+        description: 'Costo de venta según VTA-2024-001',
+        reference: 'VTA-2024-001',
+        createdAt: new Date('2024-01-25')
+      },
+      {
+        id: '2-4',
+        entryId: '2',
+        accountId: 'acc_inventario',
+        accountCode: PUC_ACCOUNTS.INVENTARIO_MERCANCIAS,
+        accountName: 'Inventario de Mercancías',
+        debitAmount: 0,
+        creditAmount: 15000,
+        description: 'Salida de inventario según VTA-2024-001',
+        reference: 'VTA-2024-001',
+        createdAt: new Date('2024-01-25')
+      }
+    ],
+    createdAt: new Date('2024-01-25'),
+    updatedAt: new Date('2024-01-25')
+  }
+]
+
+// Datos simulados de movimientos contables de inventario
+export const MOCK_INVENTORY_ACCOUNTING_MOVEMENTS: InventoryAccountingMovement[] = [
+  {
+    id: '1',
+    productId: '1',
+    productName: 'Café Arábica Premium',
+    movementType: InventoryMovementType.ENTRADA_COMPRA,
+    quantity: 5000,
+    unitCost: 15,
+    totalCost: 75000,
+    accountingEntryId: '1',
+    reason: 'Compra a proveedor',
+    supplierId: '1',
+    supplierName: 'Café del Valle S.A.S.',
+    documentType: DocumentType.FACTURA_COMPRA,
+    documentNumber: 'FAC-2024-001',
+    userId: '1',
+    userName: 'Administrador',
+    createdAt: new Date('2024-01-25')
+  },
+  {
+    id: '2',
+    productId: '1',
+    productName: 'Café Arábica Premium',
+    movementType: InventoryMovementType.SALIDA_VENTA,
+    quantity: 500,
+    unitCost: 15,
+    totalCost: 7500,
+    accountingEntryId: '2',
+    reason: 'Venta a cliente',
+    documentType: DocumentType.FACTURA_VENTA,
+    documentNumber: 'VTA-2024-001',
+    userId: '1',
+    userName: 'Administrador',
+    createdAt: new Date('2024-01-25')
+  }
+]
+
+// Datos simulados de clasificación de gastos
+export const MOCK_EXPENSE_CLASSIFICATIONS: ExpenseClassification[] = MOCK_EXPENSES.map(expense => {
+  const classification = ExpenseClassifier.classifyExpense(
+    expense.categoryName,
+    expense.description || expense.title,
+    expense.amount
+  )
+
+  return {
+    id: `class_${expense.id}`,
+    expenseId: expense.id,
+    accountCode: classification.accountCode,
+    accountName: classification.accountName,
+    classification: classification.classification,
+    isOperational: classification.isOperational,
+    affectsCostOfSales: false,
+    taxDeductible: classification.taxDeductible,
+    createdAt: expense.createdAt
+  }
+})
+
+// Funciones de utilidad para datos contables
+export function getAccountingEntriesByDateRange(startDate: Date, endDate: Date): AccountingEntry[] {
+  return MOCK_ACCOUNTING_ENTRIES.filter(entry =>
+    entry.date >= startDate && entry.date <= endDate
+  )
+}
+
+export function getAccountingEntriesByType(documentType: DocumentType): AccountingEntry[] {
+  return MOCK_ACCOUNTING_ENTRIES.filter(entry => entry.documentType === documentType)
+}
+
+export function getInventoryMovementsByProduct(productId: string): InventoryAccountingMovement[] {
+  return MOCK_INVENTORY_ACCOUNTING_MOVEMENTS.filter(movement => movement.productId === productId)
+}
+
+export function getExpenseClassificationsByType(classificationType: ExpenseClassificationType): ExpenseClassification[] {
+  return MOCK_EXPENSE_CLASSIFICATIONS.filter(classification =>
+    classification.classification === classificationType
+  )
+}
+
+export function getAccountingStats() {
+  const totalEntries = MOCK_ACCOUNTING_ENTRIES.length
+  const balancedEntries = MOCK_ACCOUNTING_ENTRIES.filter(entry => entry.isBalanced).length
+  const approvedEntries = MOCK_ACCOUNTING_ENTRIES.filter(entry => entry.status === EntryStatus.APROBADO).length
+
+  const totalDebits = MOCK_ACCOUNTING_ENTRIES.reduce((sum, entry) => sum + entry.totalDebit, 0)
+  const totalCredits = MOCK_ACCOUNTING_ENTRIES.reduce((sum, entry) => sum + entry.totalCredit, 0)
+
+  return {
+    totalEntries,
+    balancedEntries,
+    approvedEntries,
+    balancePercentage: totalEntries > 0 ? (balancedEntries / totalEntries) * 100 : 0,
+    approvalPercentage: totalEntries > 0 ? (approvedEntries / totalEntries) * 100 : 0,
+    totalDebits,
+    totalCredits,
+    isSystemBalanced: Math.abs(totalDebits - totalCredits) < 0.01
+  }
+}
+
 // Función para obtener clientes por segmento específico
 export function getCustomersBySpecificSegment(segment: 'NUEVO' | 'POTENCIAL' | 'OCASIONAL' | 'FRECUENTE' | 'VIP' | 'EN_RIESGO') {
   return MOCK_CUSTOMERS.filter(customer => customer.segment === segment)
 }
-
-export function getUserById(id: string): User | undefined {
-  return MOCK_USERS.find(user => user.id === id)
-}
-
 

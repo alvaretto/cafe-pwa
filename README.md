@@ -106,6 +106,56 @@ La aplicación CRM Tinto del Mirador está completamente implementada y operativ
 - **React Hook Form** - Manejo eficiente de formularios
 - **Zustand** - Gestión de estado global
 
+## 📊 Mejoras Contables Implementadas - PUC 2025
+
+**✅ CUMPLIMIENTO COMPLETO CON PLAN ÚNICO DE CONTABILIDAD (PUC) 2025 DE COLOMBIA**
+
+El CRM Tinto del Mirador ahora incluye un sistema contable robusto que cumple con los principios contables modernos del Plan Único de Contabilidad (PUC) 2025 de Colombia, facilitando la integración con sistemas contables profesionales.
+
+### 🧮 **Módulo de Inventarios - Contabilidad**
+- ✅ **Valoración PEPS (Primeras Entradas, Primeras Salidas)** - Método oficial según PUC 2025
+- ✅ **Cuentas de inventario** - Grupo 14 (1435 - Inventario de Mercancías)
+- ✅ **Provisiones por deterioro** - Control automático de obsolescencia y mermas
+- ✅ **Registro de diferencias** - Ajustes positivos y negativos con asientos automáticos
+- ✅ **Movimientos contables** - Trazabilidad completa de entradas y salidas
+- ✅ **Capas de inventario** - Sistema PEPS con control de costos por lote
+- ✅ **Reportes contables** - Balance de inventarios y auxiliares detallados
+
+### 💰 **Módulo de Compras - Contabilidad**
+- ✅ **Cuentas por pagar** - Grupo 22 (2205 - Proveedores Nacionales)
+- ✅ **IVA descontable** - Cuenta 1355 con control automático
+- ✅ **Retenciones en la fuente** - Cuenta 2365 con cálculos automáticos
+- ✅ **Asientos contables automáticos** - Generación según normativa PUC 2025
+- ✅ **Control de vencimientos** - Seguimiento de pagos y plazos
+- ✅ **Documentación soporte** - Vinculación de facturas y remisiones
+- ✅ **Reportes de compras** - Auxiliar de proveedores y control de IVA
+
+### 💸 **Módulo de Gastos - Clasificación PUC 2025**
+- ✅ **Gastos de administración** - Grupo 51 (5105, 5110, 5120, 5135, 5145)
+- ✅ **Gastos de ventas** - Grupo 52 (5205, 5210, 5220, 5225)
+- ✅ **Gastos financieros** - Grupo 53 (5305, 5315)
+- ✅ **Otros gastos** - Grupo 54 (5495)
+- ✅ **Clasificación automática** - IA que asigna cuentas PUC según descripción
+- ✅ **Control de deducibilidad** - Identificación automática de gastos deducibles
+- ✅ **Separación operacional** - Distinción entre gastos operacionales y no operacionales
+
+### 📋 **Funcionalidades Contables Avanzadas**
+- ✅ **Generador de asientos contables** - Automático según transacciones
+- ✅ **Balance de comprobación** - Verificación automática de débitos = créditos
+- ✅ **Auxiliares por cuenta** - Movimientos detallados por código PUC
+- ✅ **Estado de resultados** - Clasificación automática de ingresos y gastos
+- ✅ **Control de integridad** - Validación de consistencia contable
+- ✅ **Reportes fiscales** - Preparación para declaraciones tributarias
+- ✅ **Trazabilidad completa** - Auditoría de todas las transacciones contables
+
+### 🔧 **Arquitectura Contable**
+- ✅ **Tipos TypeScript** - Definiciones completas para entidades contables
+- ✅ **Utilidades PUC** - Funciones especializadas para cálculos contables
+- ✅ **Validaciones automáticas** - Verificación de reglas contables
+- ✅ **Datos mock** - Ejemplos completos para demostración
+- ✅ **Interfaz intuitiva** - Pestañas especializadas en cada módulo
+- ✅ **Documentación técnica** - Explicación detallada de implementación
+
 ### Backend & Database
 - **Next.js API Routes** - Endpoints del servidor
 - **Prisma ORM** - Mapeo objeto-relacional
@@ -382,6 +432,71 @@ npm start
 - **Configurar Redis** para cacheo de sesiones
 - **Implementar microservicios** para módulos independientes
 - **Configurar CI/CD pipeline** automatizado
+
+## 🚀 Próximos Pasos para Optimización
+
+### 📊 **Integración con Sistemas Contables Externos**
+- **Conexión con software contable** - Integración con SIIGO, World Office, Alegra
+- **Exportación de asientos** - Formatos estándar para importación
+- **Sincronización automática** - Transferencia de datos contables en tiempo real
+- **API contable** - Endpoints especializados para sistemas externos
+- **Validación cruzada** - Verificación de consistencia entre sistemas
+
+### 📈 **Reportes Financieros Automatizados**
+- **Estado de situación financiera** - Balance general automatizado
+- **Estado de resultados** - P&G con clasificación PUC automática
+- **Flujo de efectivo** - Proyecciones y análisis de liquidez
+- **Indicadores financieros** - ROI, margen bruto, rotación de inventarios
+- **Reportes tributarios** - Preparación automática para DIAN
+- **Dashboard financiero** - Métricas contables en tiempo real
+
+### ⚡ **Mejoras de Rendimiento y Escalabilidad**
+- **Optimización de consultas** - Índices especializados para datos contables
+- **Cacheo inteligente** - Redis para cálculos contables frecuentes
+- **Procesamiento asíncrono** - Jobs para cálculos complejos de inventario
+- **Compresión de datos** - Optimización de almacenamiento histórico
+- **Particionamiento** - Separación de datos por períodos contables
+- **CDN para reportes** - Distribución optimizada de documentos
+
+### 🔍 **Auditoría y Trazabilidad de Transacciones**
+- **Log de auditoría** - Registro completo de cambios contables
+- **Firma digital** - Integridad de asientos contables
+- **Backup automático** - Respaldo de datos contables críticos
+- **Versionado de asientos** - Historial de modificaciones
+- **Control de acceso** - Permisos granulares por función contable
+- **Alertas de anomalías** - Detección automática de inconsistencias
+
+### 🛡️ **Mejoras de Seguridad**
+- **Encriptación de datos** - Protección de información financiera sensible
+- **Autenticación multifactor** - Seguridad adicional para módulos contables
+- **Certificados SSL** - Comunicación segura con sistemas externos
+- **Cumplimiento GDPR** - Protección de datos según normativas
+- **Logs de seguridad** - Monitoreo de accesos a datos contables
+- **Backup cifrado** - Respaldos seguros de información financiera
+
+### 📱 **Funcionalidades Móviles Avanzadas**
+- **App móvil nativa** - Acceso completo desde dispositivos móviles
+- **Sincronización offline** - Trabajo sin conexión con sincronización posterior
+- **Notificaciones push** - Alertas de vencimientos y anomalías contables
+- **Escáner de facturas** - OCR para digitalización automática
+- **Geolocalización** - Control de ubicación para transacciones
+- **Biometría** - Autenticación por huella o reconocimiento facial
+
+### 🤖 **Inteligencia Artificial Avanzada**
+- **Predicción de flujo de caja** - ML para proyecciones financieras
+- **Detección de fraudes** - Algoritmos para identificar anomalías
+- **Clasificación automática** - IA mejorada para categorización de gastos
+- **Recomendaciones financieras** - Insights para optimización de costos
+- **Análisis predictivo** - Tendencias de ventas e inventario
+- **Chatbot contable** - Asistente virtual para consultas financieras
+
+### 🌐 **Integración con Ecosistema Empresarial**
+- **API REST completa** - Endpoints para todas las funcionalidades
+- **Webhooks** - Notificaciones automáticas de eventos contables
+- **Integración bancaria** - Conexión directa con entidades financieras
+- **E-commerce** - Sincronización con tiendas online
+- **CRM externo** - Integración con sistemas de gestión de clientes
+- **ERP empresarial** - Conexión con sistemas de planificación de recursos
 
 ## 📄 Licencia
 
