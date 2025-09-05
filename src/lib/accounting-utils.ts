@@ -22,6 +22,9 @@ import {
 
 export const PUC_ACCOUNTS = {
   // INVENTARIOS (Grupo 14)
+  INVENTARIO_MATERIAS_PRIMAS: '1405', // Materias primas
+  INVENTARIO_PRODUCTOS_PROCESO: '1410', // Productos en proceso
+  INVENTARIO_PRODUCTOS_TERMINADOS: '1430', // Productos terminados
   INVENTARIO_MERCANCIAS: '1435', // Mercancías no fabricadas por la empresa
   PROVISION_INVENTARIOS: '1499', // Provisiones para protección de inventarios
   
@@ -163,7 +166,170 @@ export class InventoryValuationPEPS {
 
 export class AccountingEntryGenerator {
   /**
-   * Genera asiento contable para compra de inventario
+   * Genera un asiento contable para compra de materias primas
+   */
+  static generateRawMaterialPurchaseEntry(
+    supplierId: string,
+    supplierName: string,
+    invoiceNumber: string,
+    subtotal: number,
+    ivaAmount: number,
+    retentionAmount: number,
+    createdBy: string,
+    createdByName: string
+  ): AccountingEntry {
+    const entryNumber = `MP-${Date.now()}`
+    const totalAmount = subtotal + ivaAmount - retentionAmount
+
+    const details: AccountingEntryDetail[] = [
+      // Débito: Inventario de Materias Primas
+      {
+        id: `detail_${Date.now()}_1`,
+        entryId: '',
+        accountId: '',
+        accountCode: PUC_ACCOUNTS.INVENTARIO_MATERIAS_PRIMAS,
+        accountName: 'Inventario de Materias Primas',
+        debitAmount: subtotal,
+        creditAmount: 0,
+        description: `Compra materia prima - ${supplierName} - ${invoiceNumber}`,
+        reference: invoiceNumber,
+        thirdPartyId: supplierId,
+        thirdPartyName: supplierName,
+        createdAt: new Date()
+      },
+      // Débito: IVA Descontable (si aplica)
+      ...(ivaAmount > 0 ? [{
+        id: `detail_${Date.now()}_2`,
+        entryId: '',
+        accountId: '',
+        accountCode: '1355',
+        accountName: 'IVA Descontable',
+        debitAmount: ivaAmount,
+        creditAmount: 0,
+        description: `IVA compra materia prima - ${supplierName}`,
+        reference: invoiceNumber,
+        thirdPartyId: supplierId,
+        thirdPartyName: supplierName,
+        createdAt: new Date()
+      }] : []),
+      // Crédito: Proveedores
+      {
+        id: `detail_${Date.now()}_3`,
+        entryId: '',
+        accountId: '',
+        accountCode: PUC_ACCOUNTS.PROVEEDORES_NACIONALES,
+        accountName: 'Proveedores Nacionales',
+        debitAmount: 0,
+        creditAmount: totalAmount,
+        description: `Cuenta por pagar - ${supplierName} - ${invoiceNumber}`,
+        reference: invoiceNumber,
+        thirdPartyId: supplierId,
+        thirdPartyName: supplierName,
+        createdAt: new Date()
+      },
+      // Crédito: Retención en la Fuente (si aplica)
+      ...(retentionAmount > 0 ? [{
+        id: `detail_${Date.now()}_4`,
+        entryId: '',
+        accountId: '',
+        accountCode: PUC_ACCOUNTS.RETENCION_FUENTE,
+        accountName: 'Retención en la Fuente',
+        debitAmount: 0,
+        creditAmount: retentionAmount,
+        description: `Retención aplicada - ${supplierName}`,
+        reference: invoiceNumber,
+        thirdPartyId: supplierId,
+        thirdPartyName: supplierName,
+        createdAt: new Date()
+      }] : [])
+    ]
+
+    const totalDebit = details.reduce((sum, detail) => sum + detail.debitAmount, 0)
+    const totalCredit = details.reduce((sum, detail) => sum + detail.creditAmount, 0)
+
+    return {
+      id: `entry_${Date.now()}`,
+      entryNumber,
+      date: new Date(),
+      description: `Compra de materia prima - ${supplierName} - ${invoiceNumber}`,
+      documentType: DocumentType.FACTURA_COMPRA,
+      documentNumber: invoiceNumber,
+      totalDebit,
+      totalCredit,
+      isBalanced: totalDebit === totalCredit,
+      details,
+      status: EntryStatus.PENDIENTE_APROBACION,
+      userId: createdBy,
+      userName: createdByName,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  }
+
+  /**
+   * Genera un asiento contable para consumo de materias primas
+   */
+  static generateRawMaterialConsumptionEntry(
+    productionOrderId: string,
+    materialDescription: string,
+    quantity: number,
+    unitCost: number,
+    createdBy: string,
+    createdByName: string
+  ): AccountingEntry {
+    const entryNumber = `MC-${Date.now()}`
+    const totalCost = quantity * unitCost
+
+    const details: AccountingEntryDetail[] = [
+      // Débito: Inventario de Productos en Proceso
+      {
+        id: `detail_${Date.now()}_1`,
+        entryId: '',
+        accountId: '',
+        accountCode: PUC_ACCOUNTS.INVENTARIO_PRODUCTOS_PROCESO,
+        accountName: 'Inventario de Productos en Proceso',
+        debitAmount: totalCost,
+        creditAmount: 0,
+        description: `Consumo materia prima - ${materialDescription}`,
+        reference: productionOrderId,
+        createdAt: new Date()
+      },
+      // Crédito: Inventario de Materias Primas
+      {
+        id: `detail_${Date.now()}_2`,
+        entryId: '',
+        accountId: '',
+        accountCode: PUC_ACCOUNTS.INVENTARIO_MATERIAS_PRIMAS,
+        accountName: 'Inventario de Materias Primas',
+        debitAmount: 0,
+        creditAmount: totalCost,
+        description: `Salida materia prima - ${materialDescription}`,
+        reference: productionOrderId,
+        createdAt: new Date()
+      }
+    ]
+
+    return {
+      id: `entry_${Date.now()}`,
+      entryNumber,
+      date: new Date(),
+      description: `Consumo de materia prima en producción - ${materialDescription}`,
+      documentType: DocumentType.NOTA_INTERNA,
+      documentNumber: productionOrderId,
+      totalDebit: totalCost,
+      totalCredit: totalCost,
+      isBalanced: true,
+      details,
+      status: EntryStatus.PENDIENTE_APROBACION,
+      userId: createdBy,
+      userName: createdByName,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  }
+
+  /**
+   * Genera asiento contable para compra de inventario (mercancías)
    */
   static generatePurchaseEntry(
     supplierId: string,
@@ -384,12 +550,107 @@ export class AccountingEntryGenerator {
 }
 
 // ============================================================================
+// CLASIFICADOR DE TRANSACCIONES SEGÚN PUC 2025
+// ============================================================================
+
+export class TransactionClassifier {
+  /**
+   * Determina si una transacción debe clasificarse como activo o gasto
+   */
+  static classifyTransaction(
+    categoryName: string,
+    description: string,
+    amount: number
+  ): {
+    isAsset: boolean
+    accountCode: string
+    accountName: string
+    classification: string
+    explanation: string
+  } {
+    const lowerCategory = categoryName.toLowerCase()
+    const lowerDescription = description.toLowerCase()
+
+    // MATERIAS PRIMAS - ACTIVO (Cuenta 1405)
+    if (lowerCategory.includes('materia') && lowerCategory.includes('prima') ||
+        lowerDescription.includes('café verde') || lowerDescription.includes('materia prima') ||
+        lowerDescription.includes('insumos para tostado') || lowerDescription.includes('café sin tostar')) {
+      return {
+        isAsset: true,
+        accountCode: PUC_ACCOUNTS.INVENTARIO_MATERIAS_PRIMAS,
+        accountName: 'Inventario de Materias Primas',
+        classification: 'INVENTARIO_MATERIAS_PRIMAS',
+        explanation: 'Las materias primas son activos que se convertirán en productos terminados. Se registran como inventario hasta su consumo en el proceso productivo.'
+      }
+    }
+
+    // PRODUCTOS EN PROCESO - ACTIVO (Cuenta 1410)
+    if (lowerDescription.includes('proceso') || lowerDescription.includes('tostado en curso') ||
+        lowerDescription.includes('producción') || lowerDescription.includes('elaboración')) {
+      return {
+        isAsset: true,
+        accountCode: PUC_ACCOUNTS.INVENTARIO_PRODUCTOS_PROCESO,
+        accountName: 'Inventario de Productos en Proceso',
+        classification: 'INVENTARIO_PRODUCTOS_PROCESO',
+        explanation: 'Productos que están en proceso de transformación. Son activos hasta completar su elaboración.'
+      }
+    }
+
+    // PRODUCTOS TERMINADOS - ACTIVO (Cuenta 1430)
+    if (lowerDescription.includes('café tostado') || lowerDescription.includes('producto terminado') ||
+        lowerDescription.includes('café molido') || lowerDescription.includes('empacado')) {
+      return {
+        isAsset: true,
+        accountCode: PUC_ACCOUNTS.INVENTARIO_PRODUCTOS_TERMINADOS,
+        accountName: 'Inventario de Productos Terminados',
+        classification: 'INVENTARIO_PRODUCTOS_TERMINADOS',
+        explanation: 'Productos listos para la venta. Son activos hasta su venta al cliente.'
+      }
+    }
+
+    // SUMINISTROS Y MATERIALES - ACTIVO o GASTO según uso
+    if (lowerCategory.includes('suministro') || lowerCategory.includes('material') ||
+        lowerDescription.includes('empaque') || lowerDescription.includes('bolsas') ||
+        lowerDescription.includes('etiquetas')) {
+      // Si es para producción, es activo temporal
+      if (lowerDescription.includes('producción') || lowerDescription.includes('empaque producto')) {
+        return {
+          isAsset: true,
+          accountCode: PUC_ACCOUNTS.INVENTARIO_MATERIAS_PRIMAS,
+          accountName: 'Inventario de Materias Primas',
+          classification: 'INVENTARIO_MATERIAS_PRIMAS',
+          explanation: 'Suministros para producción se registran como activo hasta su consumo.'
+        }
+      }
+      // Si es para administración, es gasto
+      return {
+        isAsset: false,
+        accountCode: PUC_ACCOUNTS.DIVERSOS_ADMIN,
+        accountName: 'Gastos Diversos',
+        classification: 'GASTOS_DIVERSOS',
+        explanation: 'Suministros administrativos se registran directamente como gasto.'
+      }
+    }
+
+    // Por defecto, clasificar como gasto
+    return {
+      isAsset: false,
+      accountCode: PUC_ACCOUNTS.DIVERSOS_ADMIN,
+      accountName: 'Gastos Diversos',
+      classification: 'GASTOS_DIVERSOS',
+      explanation: 'Transacción clasificada como gasto operacional.'
+    }
+  }
+}
+
+// ============================================================================
 // CLASIFICADOR DE GASTOS SEGÚN PUC 2025
 // ============================================================================
 
 export class ExpenseClassifier {
   /**
    * Clasifica un gasto según el PUC 2025
+   * IMPORTANTE: Esta función solo debe usarse para gastos reales, no para materias primas
    */
   static classifyExpense(
     categoryName: string,
@@ -401,9 +662,23 @@ export class ExpenseClassifier {
     classification: ExpenseClassificationType
     isOperational: boolean
     taxDeductible: boolean
+    warning?: string
   } {
     const lowerCategory = categoryName.toLowerCase()
     const lowerDescription = description.toLowerCase()
+
+    // VALIDACIÓN: Detectar si se está intentando clasificar una materia prima como gasto
+    const transactionClassification = TransactionClassifier.classifyTransaction(categoryName, description, amount)
+    if (transactionClassification.isAsset) {
+      return {
+        accountCode: transactionClassification.accountCode,
+        accountName: transactionClassification.accountName,
+        classification: ExpenseClassificationType.DIVERSOS,
+        isOperational: false,
+        taxDeductible: false,
+        warning: `⚠️ ADVERTENCIA: "${categoryName}" debería clasificarse como ACTIVO (${transactionClassification.accountName}) no como gasto. ${transactionClassification.explanation}`
+      }
+    }
     
     // Gastos de personal
     if (lowerCategory.includes('personal') || lowerCategory.includes('nómina') || 

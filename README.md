@@ -112,9 +112,30 @@ La aplicación CRM Tinto del Mirador está completamente implementada y operativ
 
 El CRM Tinto del Mirador ahora incluye un sistema contable robusto que cumple con los principios contables modernos del Plan Único de Contabilidad (PUC) 2025 de Colombia, facilitando la integración con sistemas contables profesionales.
 
+### 🔧 **Correcciones Contables Críticas Implementadas**
+
+**✅ TRATAMIENTO CORRECTO DE MATERIAS PRIMAS SEGÚN PUC 2025**
+
+Se han implementado correcciones fundamentales para asegurar el tratamiento contable correcto de materias primas y otros conceptos según las normas del PUC 2025:
+
+#### 🎯 **Problema Identificado y Corregido**
+- **❌ Error Anterior**: Materias primas clasificadas incorrectamente como "gastos"
+- **✅ Corrección Aplicada**: Materias primas ahora se clasifican correctamente como "activos" (Cuenta 1405)
+- **📋 Flujo Correcto**: Compra → Inventario de Materias Primas → Costo de Ventas (cuando se consume)
+
+#### 🔍 **Sistema de Validación Automática**
+- **Clasificador Inteligente**: Detecta automáticamente si una transacción debe ser activo o gasto
+- **Alertas de Advertencia**: Notifica cuando se detectan clasificaciones incorrectas
+- **Validación en Tiempo Real**: Previene errores contables antes de registrar transacciones
+
 ### 🧮 **Módulo de Inventarios - Contabilidad**
 - ✅ **Valoración PEPS (Primeras Entradas, Primeras Salidas)** - Método oficial según PUC 2025
-- ✅ **Cuentas de inventario** - Grupo 14 (1435 - Inventario de Mercancías)
+- ✅ **Cuentas de inventario completas** - Grupo 14 según PUC 2025:
+  - **1405** - Inventario de Materias Primas (café verde, insumos)
+  - **1410** - Inventario de Productos en Proceso (café en tostado)
+  - **1430** - Inventario de Productos Terminados (café listo para venta)
+  - **1435** - Inventario de Mercancías (productos para reventa)
+- ✅ **Gestión de Materias Primas** - Control completo de café verde y suministros
 - ✅ **Provisiones por deterioro** - Control automático de obsolescencia y mermas
 - ✅ **Registro de diferencias** - Ajustes positivos y negativos con asientos automáticos
 - ✅ **Movimientos contables** - Trazabilidad completa de entradas y salidas
@@ -122,6 +143,10 @@ El CRM Tinto del Mirador ahora incluye un sistema contable robusto que cumple co
 - ✅ **Reportes contables** - Balance de inventarios y auxiliares detallados
 
 ### 💰 **Módulo de Compras - Contabilidad**
+- ✅ **Clasificación Automática Inteligente** - Distingue entre materias primas y mercancías
+- ✅ **Asientos Diferenciados**:
+  - **Materias Primas**: Débito a cuenta 1405 (Inventario de Materias Primas)
+  - **Mercancías**: Débito a cuenta 1435 (Inventario de Mercancías)
 - ✅ **Cuentas por pagar** - Grupo 22 (2205 - Proveedores Nacionales)
 - ✅ **IVA descontable** - Cuenta 1355 con control automático
 - ✅ **Retenciones en la fuente** - Cuenta 2365 con cálculos automáticos
@@ -131,6 +156,8 @@ El CRM Tinto del Mirador ahora incluye un sistema contable robusto que cumple co
 - ✅ **Reportes de compras** - Auxiliar de proveedores y control de IVA
 
 ### 💸 **Módulo de Gastos - Clasificación PUC 2025**
+- ✅ **Validación Contable Avanzada** - Detecta materias primas mal clasificadas como gastos
+- ✅ **Alertas de Corrección** - Notifica cuando una transacción debe ser activo, no gasto
 - ✅ **Gastos de administración** - Grupo 51 (5105, 5110, 5120, 5135, 5145)
 - ✅ **Gastos de ventas** - Grupo 52 (5205, 5210, 5220, 5225)
 - ✅ **Gastos financieros** - Grupo 53 (5305, 5315)
@@ -140,7 +167,12 @@ El CRM Tinto del Mirador ahora incluye un sistema contable robusto que cumple co
 - ✅ **Separación operacional** - Distinción entre gastos operacionales y no operacionales
 
 ### 📋 **Funcionalidades Contables Avanzadas**
-- ✅ **Generador de asientos contables** - Automático según transacciones
+- ✅ **Clasificador de Transacciones** - Determina automáticamente si es activo o gasto
+- ✅ **Generador de asientos diferenciados**:
+  - **Materias Primas**: Asientos específicos para cuenta 1405
+  - **Consumo de MP**: Transferencia a productos en proceso (1410)
+  - **Mercancías**: Asientos para cuenta 1435
+- ✅ **Sistema de Alertas Contables** - Previene clasificaciones incorrectas
 - ✅ **Balance de comprobación** - Verificación automática de débitos = créditos
 - ✅ **Auxiliares por cuenta** - Movimientos detallados por código PUC
 - ✅ **Estado de resultados** - Clasificación automática de ingresos y gastos

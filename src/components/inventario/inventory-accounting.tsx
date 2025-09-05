@@ -19,13 +19,19 @@ import {
   BookOpen,
   PieChart
 } from 'lucide-react'
-import { 
+import {
   MOCK_ACCOUNTING_ENTRIES,
   MOCK_INVENTORY_ACCOUNTING_MOVEMENTS,
   MOCK_EXPENSE_CLASSIFICATIONS,
+  MOCK_RAW_MATERIALS,
+  MOCK_RAW_MATERIAL_MOVEMENTS,
   getAccountingStats,
   getInventoryMovementsByProduct,
-  getExpenseClassificationsByType
+  getExpenseClassificationsByType,
+  getRawMaterials,
+  getRawMaterialMovements,
+  getLowStockRawMaterials,
+  getTotalRawMaterialsValue
 } from '@/lib/mock-data'
 import { 
   DocumentType,
@@ -43,9 +49,13 @@ export function InventoryAccounting({ productId }: InventoryAccountingProps) {
   const [activeTab, setActiveTab] = useState('overview')
   
   const accountingStats = getAccountingStats()
-  const inventoryMovements = productId 
+  const inventoryMovements = productId
     ? getInventoryMovementsByProduct(productId)
     : MOCK_INVENTORY_ACCOUNTING_MOVEMENTS
+  const rawMaterials = getRawMaterials()
+  const rawMaterialMovements = getRawMaterialMovements()
+  const lowStockRawMaterials = getLowStockRawMaterials()
+  const totalRawMaterialsValue = getTotalRawMaterialsValue()
 
   return (
     <div className="space-y-6">
@@ -138,6 +148,77 @@ export function InventoryAccounting({ productId }: InventoryAccountingProps) {
             </div>
             <p className="text-xs text-amber-700">
               Diferencia: {formatCurrency(Math.abs(accountingStats.totalDebits - accountingStats.totalCredits))}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Estadísticas de Materias Primas */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-green-800">
+              Materias Primas
+            </CardTitle>
+            <Package className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-900">
+              {rawMaterials.length}
+            </div>
+            <p className="text-xs text-green-700">
+              Cuenta 1405 - PUC 2025
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-blue-800">
+              Valor Total MP
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-900">
+              {formatCurrency(totalRawMaterialsValue)}
+            </div>
+            <p className="text-xs text-blue-700">
+              Inventario valorizado
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-red-800">
+              Stock Crítico
+            </CardTitle>
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-900">
+              {lowStockRawMaterials.length}
+            </div>
+            <p className="text-xs text-red-700">
+              Materias primas
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-purple-800">
+              Movimientos MP
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-purple-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-900">
+              {rawMaterialMovements.length}
+            </div>
+            <p className="text-xs text-purple-700">
+              Este mes
             </p>
           </CardContent>
         </Card>

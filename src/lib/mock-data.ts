@@ -35,6 +35,47 @@ export interface Product {
   updatedAt: Date
 }
 
+export interface RawMaterial {
+  id: string
+  name: string
+  description: string
+  category: 'cafe-verde' | 'insumos-tostado' | 'empaque' | 'otros'
+  unit: 'kg' | 'gramos' | 'unidades' | 'metros'
+  currentStock: number
+  minStock: number
+  maxStock: number
+  unitCost: number
+  totalValue: number
+  supplier: string
+  supplierId: string
+  lastPurchaseDate: Date
+  expirationDate?: Date
+  location: string
+  isActive: boolean
+  tags: string[]
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface RawMaterialMovement {
+  id: string
+  rawMaterialId: string
+  rawMaterialName: string
+  movementType: 'entrada' | 'salida' | 'ajuste'
+  quantity: number
+  unitCost: number
+  totalCost: number
+  reason: string
+  documentNumber?: string
+  supplierId?: string
+  supplierName?: string
+  productionOrderId?: string
+  userId: string
+  userName: string
+  date: Date
+  createdAt: Date
+}
+
 export interface Category {
   id: string
   name: string
@@ -1198,11 +1239,11 @@ export interface Budget {
 export const MOCK_EXPENSE_CATEGORIES: ExpenseCategory[] = [
   {
     id: '1',
-    name: 'Materia Prima',
-    description: 'Compra de café verde, insumos para tostado',
+    name: 'Suministros Administrativos',
+    description: 'Papelería, útiles de oficina, suministros generales',
     color: '#10B981', // green-500
     isActive: true,
-    monthlyBudget: 2000000,
+    monthlyBudget: 300000,
     createdAt: new Date('2023-01-15'),
     updatedAt: new Date('2024-01-15'),
   },
@@ -1263,16 +1304,16 @@ export const MOCK_EXPENSES: Expense[] = [
   {
     id: '1',
     categoryId: '1',
-    categoryName: 'Materia Prima',
-    title: 'Compra café verde Huila',
-    description: 'Café arábica premium para tostado, 50 kg',
-    amount: 750000,
+    categoryName: 'Suministros Administrativos',
+    title: 'Compra papelería oficina',
+    description: 'Papel, bolígrafos, carpetas para administración',
+    amount: 85000,
     date: new Date('2024-01-25'),
     paymentMethod: 'transferencia',
-    supplier: 'Café del Valle S.A.S.',
+    supplier: 'Papelería Central',
     receiptNumber: 'FAC-2024-001',
     isRecurring: false,
-    tags: ['cafe-verde', 'huila', 'arabica'],
+    tags: ['papeleria', 'oficina', 'administracion'],
     userId: '1',
     userName: 'Administrador',
     isApproved: true,
@@ -2290,6 +2331,193 @@ export function updateConfigValue(key: string, value: any, updatedBy: string): b
     return true
   }
   return false
+}
+
+// ============================================================================
+// DATOS MOCK PARA MATERIAS PRIMAS
+// ============================================================================
+
+export const MOCK_RAW_MATERIALS: RawMaterial[] = [
+  {
+    id: '1',
+    name: 'Café Verde Huila',
+    description: 'Café arábica premium de la región del Huila, perfil cítrico',
+    category: 'cafe-verde',
+    unit: 'kg',
+    currentStock: 150,
+    minStock: 50,
+    maxStock: 300,
+    unitCost: 15000,
+    totalValue: 2250000,
+    supplier: 'Café del Valle S.A.S.',
+    supplierId: '1',
+    lastPurchaseDate: new Date('2024-01-25'),
+    expirationDate: new Date('2025-01-25'),
+    location: 'Bodega A - Estante 1',
+    isActive: true,
+    tags: ['arabica', 'huila', 'premium', 'citrico'],
+    createdAt: new Date('2023-01-15'),
+    updatedAt: new Date('2024-01-25')
+  },
+  {
+    id: '2',
+    name: 'Café Verde Nariño',
+    description: 'Café arábica de altura de Nariño, notas florales',
+    category: 'cafe-verde',
+    unit: 'kg',
+    currentStock: 80,
+    minStock: 30,
+    maxStock: 200,
+    unitCost: 16500,
+    totalValue: 1320000,
+    supplier: 'Cooperativa Nariño',
+    supplierId: '2',
+    lastPurchaseDate: new Date('2024-01-20'),
+    expirationDate: new Date('2025-01-20'),
+    location: 'Bodega A - Estante 2',
+    isActive: true,
+    tags: ['arabica', 'narino', 'altura', 'floral'],
+    createdAt: new Date('2023-01-15'),
+    updatedAt: new Date('2024-01-20')
+  },
+  {
+    id: '3',
+    name: 'Bolsas Kraft 250g',
+    description: 'Bolsas de papel kraft con válvula para café tostado',
+    category: 'empaque',
+    unit: 'unidades',
+    currentStock: 500,
+    minStock: 100,
+    maxStock: 1000,
+    unitCost: 450,
+    totalValue: 225000,
+    supplier: 'Empaques del Café',
+    supplierId: '3',
+    lastPurchaseDate: new Date('2024-01-15'),
+    location: 'Bodega B - Estante 1',
+    isActive: true,
+    tags: ['empaque', 'kraft', '250g', 'valvula'],
+    createdAt: new Date('2023-01-15'),
+    updatedAt: new Date('2024-01-15')
+  },
+  {
+    id: '4',
+    name: 'Etiquetas Adhesivas',
+    description: 'Etiquetas adhesivas personalizadas para productos',
+    category: 'empaque',
+    unit: 'unidades',
+    currentStock: 1200,
+    minStock: 200,
+    maxStock: 2000,
+    unitCost: 120,
+    totalValue: 144000,
+    supplier: 'Gráficas Modernas',
+    supplierId: '4',
+    lastPurchaseDate: new Date('2024-01-10'),
+    location: 'Bodega B - Estante 2',
+    isActive: true,
+    tags: ['etiquetas', 'adhesivas', 'personalizadas'],
+    createdAt: new Date('2023-01-15'),
+    updatedAt: new Date('2024-01-10')
+  }
+]
+
+export const MOCK_RAW_MATERIAL_MOVEMENTS: RawMaterialMovement[] = [
+  {
+    id: '1',
+    rawMaterialId: '1',
+    rawMaterialName: 'Café Verde Huila',
+    movementType: 'entrada',
+    quantity: 50,
+    unitCost: 15000,
+    totalCost: 750000,
+    reason: 'Compra a proveedor',
+    documentNumber: 'FAC-2024-001',
+    supplierId: '1',
+    supplierName: 'Café del Valle S.A.S.',
+    userId: '1',
+    userName: 'Administrador',
+    date: new Date('2024-01-25'),
+    createdAt: new Date('2024-01-25T09:00:00')
+  },
+  {
+    id: '2',
+    rawMaterialId: '1',
+    rawMaterialName: 'Café Verde Huila',
+    movementType: 'salida',
+    quantity: 25,
+    unitCost: 15000,
+    totalCost: 375000,
+    reason: 'Consumo en producción',
+    productionOrderId: 'PROD-2024-001',
+    userId: '1',
+    userName: 'Administrador',
+    date: new Date('2024-01-26'),
+    createdAt: new Date('2024-01-26T14:30:00')
+  },
+  {
+    id: '3',
+    rawMaterialId: '2',
+    rawMaterialName: 'Café Verde Nariño',
+    movementType: 'entrada',
+    quantity: 30,
+    unitCost: 16500,
+    totalCost: 495000,
+    reason: 'Compra a proveedor',
+    documentNumber: 'FAC-2024-002',
+    supplierId: '2',
+    supplierName: 'Cooperativa Nariño',
+    userId: '1',
+    userName: 'Administrador',
+    date: new Date('2024-01-20'),
+    createdAt: new Date('2024-01-20T11:15:00')
+  },
+  {
+    id: '4',
+    rawMaterialId: '3',
+    rawMaterialName: 'Bolsas Kraft 250g',
+    movementType: 'entrada',
+    quantity: 500,
+    unitCost: 450,
+    totalCost: 225000,
+    reason: 'Compra a proveedor',
+    documentNumber: 'FAC-2024-003',
+    supplierId: '3',
+    supplierName: 'Empaques del Café',
+    userId: '1',
+    userName: 'Administrador',
+    date: new Date('2024-01-15'),
+    createdAt: new Date('2024-01-15T16:45:00')
+  }
+]
+
+// Funciones de utilidad para materias primas
+export function getRawMaterials(): RawMaterial[] {
+  return MOCK_RAW_MATERIALS
+}
+
+export function getRawMaterialById(id: string): RawMaterial | undefined {
+  return MOCK_RAW_MATERIALS.find(material => material.id === id)
+}
+
+export function getRawMaterialMovements(): RawMaterialMovement[] {
+  return MOCK_RAW_MATERIAL_MOVEMENTS
+}
+
+export function getRawMaterialMovementsByMaterialId(materialId: string): RawMaterialMovement[] {
+  return MOCK_RAW_MATERIAL_MOVEMENTS.filter(movement => movement.rawMaterialId === materialId)
+}
+
+export function getRawMaterialsByCategory(category: string): RawMaterial[] {
+  return MOCK_RAW_MATERIALS.filter(material => material.category === category)
+}
+
+export function getLowStockRawMaterials(): RawMaterial[] {
+  return MOCK_RAW_MATERIALS.filter(material => material.currentStock <= material.minStock)
+}
+
+export function getTotalRawMaterialsValue(): number {
+  return MOCK_RAW_MATERIALS.reduce((total, material) => total + material.totalValue, 0)
 }
 
 /**

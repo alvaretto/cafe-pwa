@@ -32,7 +32,7 @@ import {
 import { 
   ExpenseClassificationType
 } from '@/types/accounting'
-import { PUC_ACCOUNTS, ExpenseClassifier } from '@/lib/accounting-utils'
+import { PUC_ACCOUNTS, ExpenseClassifier, TransactionClassifier } from '@/lib/accounting-utils'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
 interface ExpensesAccountingProps {
@@ -70,6 +70,16 @@ export function ExpensesAccounting({ categoryId }: ExpensesAccountingProps) {
   const totalNonOperational = classificationStats
     .filter(stat => !stat.isOperational)
     .reduce((sum, stat) => sum + stat.total, 0)
+
+  // Validación contable: detectar gastos que deberían ser activos
+  const misclassifiedExpenses = expenses.filter(expense => {
+    const classification = TransactionClassifier.classifyTransaction(
+      expense.categoryName,
+      expense.description || '',
+      expense.amount
+    )
+    return classification.isAsset
+  })
 
   return (
     <div className="space-y-6">
@@ -160,6 +170,61 @@ export function ExpensesAccounting({ categoryId }: ExpensesAccountingProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Alertas de Validación Contable */}
+      {misclassifiedExpenses.length > 0 && (
+        <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2 text-red-800">
+              <AlertTriangle className="h-5 w-5" />
+              ⚠️ Advertencias de Clasificación Contable
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <p className="text-red-700 font-medium">
+                Se detectaron {misclassifiedExpenses.length} transacciones que deberían clasificarse como ACTIVOS, no como gastos:
+              </p>
+              {misclassifiedExpenses.map((expense) => {
+                const classification = TransactionClassifier.classifyTransaction(
+                  expense.categoryName,
+                  expense.description || '',
+                  expense.amount
+                )
+                return (
+                  <div key={expense.id} className="p-3 bg-white rounded-lg border border-red-200">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="font-medium text-red-900">{expense.title}</p>
+                        <p className="text-sm text-red-700">{expense.description}</p>
+                        <p className="text-xs text-red-600">Categoría: {expense.categoryName}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-red-900">{formatCurrency(expense.amount)}</p>
+                        <p className="text-xs text-red-600">{formatDate(expense.date)}</p>
+                      </div>
+                    </div>
+                    <div className="bg-red-50 p-2 rounded border border-red-200">
+                      <p className="text-sm text-red-800">
+                        <strong>Clasificación correcta:</strong> {classification.accountName} (Cuenta {classification.accountCode})
+                      </p>
+                      <p className="text-xs text-red-700 mt-1">
+                        {classification.explanation}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  <strong>💡 Recomendación:</strong> Estas transacciones deben reclasificarse en el módulo de inventario
+                  como materias primas o activos correspondientes según el PUC 2025.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tabs de Información Contable */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

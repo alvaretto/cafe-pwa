@@ -34,7 +34,7 @@ import {
   EntryStatus,
   ExpenseClassificationType
 } from '@/types/accounting'
-import { PUC_ACCOUNTS, AccountingEntryGenerator } from '@/lib/accounting-utils'
+import { PUC_ACCOUNTS, AccountingEntryGenerator, TransactionClassifier } from '@/lib/accounting-utils'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
 interface PurchasesAccountingProps {
@@ -47,6 +47,7 @@ export function PurchasesAccounting({ supplierId }: PurchasesAccountingProps) {
     supplierId: '',
     supplierName: '',
     invoiceNumber: '',
+    description: '',
     subtotal: 0,
     ivaAmount: 0,
     retentionAmount: 0
@@ -56,18 +57,42 @@ export function PurchasesAccounting({ supplierId }: PurchasesAccountingProps) {
   const accountingStats = getAccountingStats()
 
   const handleGenerateEntry = () => {
-    const entry = AccountingEntryGenerator.generatePurchaseEntry(
-      newPurchase.supplierId,
-      newPurchase.supplierName,
-      newPurchase.invoiceNumber,
-      newPurchase.subtotal,
-      newPurchase.ivaAmount,
-      newPurchase.retentionAmount,
-      'user-1',
-      'Usuario Actual'
+    // Clasificar la transacción para determinar si es activo o gasto
+    const classification = TransactionClassifier.classifyTransaction(
+      'Compra',
+      newPurchase.description,
+      newPurchase.subtotal
     )
-    
+
+    let entry
+    if (classification.isAsset && classification.classification === 'INVENTARIO_MATERIAS_PRIMAS') {
+      // Generar asiento para materia prima
+      entry = AccountingEntryGenerator.generateRawMaterialPurchaseEntry(
+        newPurchase.supplierId,
+        newPurchase.supplierName,
+        newPurchase.invoiceNumber,
+        newPurchase.subtotal,
+        newPurchase.ivaAmount,
+        newPurchase.retentionAmount,
+        'user-1',
+        'Usuario Actual'
+      )
+    } else {
+      // Generar asiento para mercancía
+      entry = AccountingEntryGenerator.generatePurchaseEntry(
+        newPurchase.supplierId,
+        newPurchase.supplierName,
+        newPurchase.invoiceNumber,
+        newPurchase.subtotal,
+        newPurchase.ivaAmount,
+        newPurchase.retentionAmount,
+        'user-1',
+        'Usuario Actual'
+      )
+    }
+
     console.log('Asiento contable generado:', entry)
+    console.log('Clasificación:', classification)
     // Aquí se enviaría al backend
   }
 
@@ -376,6 +401,18 @@ export function PurchasesAccounting({ supplierId }: PurchasesAccountingProps) {
                     placeholder="FAC-2024-001"
                   />
                 </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="description">Descripción de la Compra</Label>
+                  <Input
+                    id="description"
+                    value={newPurchase.description}
+                    onChange={(e) => setNewPurchase(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Ej: Café verde Huila, Bolsas de empaque, Suministros oficina..."
+                  />
+                  <p className="text-xs text-gray-600">
+                    💡 La descripción determina si se clasifica como materia prima (cuenta 1405) o mercancía (cuenta 1435)
+                  </p>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="subtotal">Subtotal</Label>
                   <Input
@@ -414,10 +451,10 @@ export function PurchasesAccounting({ supplierId }: PurchasesAccountingProps) {
                 </div>
               </div>
               
-              <Button 
+              <Button
                 onClick={handleGenerateEntry}
                 className="w-full bg-amber-600 hover:bg-amber-700"
-                disabled={!newPurchase.supplierName || !newPurchase.invoiceNumber || newPurchase.subtotal <= 0}
+                disabled={!newPurchase.supplierName || !newPurchase.invoiceNumber || !newPurchase.description || newPurchase.subtotal <= 0}
               >
                 <Calculator className="h-4 w-4 mr-2" />
                 Generar Asiento Contable
