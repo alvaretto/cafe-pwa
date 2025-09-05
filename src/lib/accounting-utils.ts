@@ -584,6 +584,26 @@ export class TransactionClassifier {
       }
     }
 
+    // MATERIALES DE EMPAQUE - ACTIVO (Cuenta 1405)
+    if (lowerCategory.includes('empaque') || lowerCategory.includes('embalaje') ||
+        lowerDescription.includes('bolsa') || lowerDescription.includes('bolsas') ||
+        lowerDescription.includes('etiqueta') || lowerDescription.includes('etiquetas') ||
+        lowerDescription.includes('caja') || lowerDescription.includes('cajas') ||
+        lowerDescription.includes('envase') || lowerDescription.includes('envases') ||
+        lowerDescription.includes('empaque') || lowerDescription.includes('embalaje') ||
+        lowerDescription.includes('1 libra') || lowerDescription.includes('250g') ||
+        lowerDescription.includes('500g') || lowerDescription.includes('kraft') ||
+        lowerDescription.includes('válvula') || lowerDescription.includes('valvula') ||
+        lowerDescription.includes('sellado') || lowerDescription.includes('termo')) {
+      return {
+        isAsset: true,
+        accountCode: PUC_ACCOUNTS.INVENTARIO_MATERIAS_PRIMAS,
+        accountName: 'Inventario de Materias Primas',
+        classification: 'INVENTARIO_MATERIAS_PRIMAS',
+        explanation: 'Los materiales de empaque son insumos necesarios para completar el producto final. Se consumen en el proceso productivo y forman parte del costo del producto terminado según PUC 2025.'
+      }
+    }
+
     // PRODUCTOS EN PROCESO - ACTIVO (Cuenta 1410)
     if (lowerDescription.includes('proceso') || lowerDescription.includes('tostado en curso') ||
         lowerDescription.includes('producción') || lowerDescription.includes('elaboración')) {
@@ -608,27 +628,19 @@ export class TransactionClassifier {
       }
     }
 
-    // SUMINISTROS Y MATERIALES - ACTIVO o GASTO según uso
-    if (lowerCategory.includes('suministro') || lowerCategory.includes('material') ||
-        lowerDescription.includes('empaque') || lowerDescription.includes('bolsas') ||
-        lowerDescription.includes('etiquetas')) {
-      // Si es para producción, es activo temporal
-      if (lowerDescription.includes('producción') || lowerDescription.includes('empaque producto')) {
-        return {
-          isAsset: true,
-          accountCode: PUC_ACCOUNTS.INVENTARIO_MATERIAS_PRIMAS,
-          accountName: 'Inventario de Materias Primas',
-          classification: 'INVENTARIO_MATERIAS_PRIMAS',
-          explanation: 'Suministros para producción se registran como activo hasta su consumo.'
-        }
-      }
-      // Si es para administración, es gasto
+    // SUMINISTROS ADMINISTRATIVOS - GASTO (Grupo 51)
+    if (lowerCategory.includes('suministro') && lowerCategory.includes('administrativo') ||
+        lowerDescription.includes('papelería') || lowerDescription.includes('oficina') ||
+        lowerDescription.includes('útiles') || lowerDescription.includes('carpeta') ||
+        lowerDescription.includes('bolígrafo') || lowerDescription.includes('papel') ||
+        lowerDescription.includes('tinta') || lowerDescription.includes('impresora') ||
+        lowerDescription.includes('administración') || lowerDescription.includes('escritorio')) {
       return {
         isAsset: false,
         accountCode: PUC_ACCOUNTS.DIVERSOS_ADMIN,
         accountName: 'Gastos Diversos',
         classification: 'GASTOS_DIVERSOS',
-        explanation: 'Suministros administrativos se registran directamente como gasto.'
+        explanation: 'Suministros administrativos se registran directamente como gasto operacional según PUC 2025.'
       }
     }
 

@@ -123,10 +123,18 @@ Se han implementado correcciones fundamentales para asegurar el tratamiento cont
 - **✅ Corrección Aplicada**: Materias primas ahora se clasifican correctamente como "activos" (Cuenta 1405)
 - **📋 Flujo Correcto**: Compra → Inventario de Materias Primas → Costo de Ventas (cuando se consume)
 
+#### 📦 **Tratamiento Específico de Materiales de Empaque**
+- **✅ Clasificación Correcta**: Bolsas de café, etiquetas, cajas → Inventario de Materias Primas (1405)
+- **✅ Justificación PUC 2025**: Son insumos necesarios para completar el producto final
+- **✅ Flujo Contable**: Compra → 1405 → 1410 (Productos en Proceso) → 1430 (Productos Terminados) → 6135 (Costo de Ventas)
+- **✅ Ejemplos Implementados**: Bolsas kraft 1 libra, bolsas 500g, etiquetas adhesivas, cajas de cartón
+
 #### 🔍 **Sistema de Validación Automática**
 - **Clasificador Inteligente**: Detecta automáticamente si una transacción debe ser activo o gasto
+- **Reconocimiento de Materiales de Empaque**: Identifica bolsas, etiquetas, cajas, envases automáticamente
 - **Alertas de Advertencia**: Notifica cuando se detectan clasificaciones incorrectas
 - **Validación en Tiempo Real**: Previene errores contables antes de registrar transacciones
+- **Palabras Clave Reconocidas**: "bolsa", "etiqueta", "caja", "empaque", "1 libra", "250g", "500g", "kraft", "válvula"
 
 ### 🧮 **Módulo de Inventarios - Contabilidad**
 - ✅ **Valoración PEPS (Primeras Entradas, Primeras Salidas)** - Método oficial según PUC 2025
@@ -474,6 +482,14 @@ npm start
 - **API contable** - Endpoints especializados para sistemas externos
 - **Validación cruzada** - Verificación de consistencia entre sistemas
 
+### 📦 **Optimización de Gestión de Materiales de Empaque**
+- **Cálculo automático de necesidades** - Basado en proyecciones de producción
+- **Optimización de inventarios** - Niveles óptimos según rotación y demanda
+- **Integración con proveedores** - Órdenes automáticas cuando se alcance stock mínimo
+- **Control de calidad** - Seguimiento de lotes y fechas de vencimiento
+- **Análisis de costos** - Comparación de proveedores y optimización de compras
+- **Alertas inteligentes** - Notificaciones de stock crítico y vencimientos
+
 ### 📈 **Reportes Financieros Automatizados**
 - **Estado de situación financiera** - Balance general automatizado
 - **Estado de resultados** - P&G con clasificación PUC automática
@@ -481,6 +497,7 @@ npm start
 - **Indicadores financieros** - ROI, margen bruto, rotación de inventarios
 - **Reportes tributarios** - Preparación automática para DIAN
 - **Dashboard financiero** - Métricas contables en tiempo real
+- **Análisis de materiales de empaque** - Costos por producto y eficiencia de uso
 
 ### ⚡ **Mejoras de Rendimiento y Escalabilidad**
 - **Optimización de consultas** - Índices especializados para datos contables

@@ -220,6 +220,12 @@ export function ExpensesAccounting({ categoryId }: ExpensesAccountingProps) {
                   <strong>💡 Recomendación:</strong> Estas transacciones deben reclasificarse en el módulo de inventario
                   como materias primas o activos correspondientes según el PUC 2025.
                 </p>
+                <div className="mt-2 text-xs text-blue-700">
+                  <p><strong>Ejemplos de clasificación correcta:</strong></p>
+                  <p>• Bolsas de café, etiquetas, cajas → Inventario de Materias Primas (1405)</p>
+                  <p>• Café verde, insumos de tostado → Inventario de Materias Primas (1405)</p>
+                  <p>• Papelería, útiles de oficina → Gastos Diversos (5195)</p>
+                </div>
               </div>
             </div>
           </CardContent>

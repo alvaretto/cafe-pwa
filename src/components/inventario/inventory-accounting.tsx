@@ -57,6 +57,11 @@ export function InventoryAccounting({ productId }: InventoryAccountingProps) {
   const lowStockRawMaterials = getLowStockRawMaterials()
   const totalRawMaterialsValue = getTotalRawMaterialsValue()
 
+  // Separar materiales de empaque
+  const packagingMaterials = rawMaterials.filter(material => material.category === 'empaque')
+  const coffeeMaterials = rawMaterials.filter(material => material.category === 'cafe-verde')
+  const packagingValue = packagingMaterials.reduce((sum, material) => sum + material.totalValue, 0)
+
   return (
     <div className="space-y-6">
       {/* Header Contable */}
@@ -209,20 +214,74 @@ export function InventoryAccounting({ productId }: InventoryAccountingProps) {
         <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-purple-800">
-              Movimientos MP
+              Materiales Empaque
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-purple-600" />
+            <Package className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-900">
-              {rawMaterialMovements.length}
+              {packagingMaterials.length}
             </div>
             <p className="text-xs text-purple-700">
-              Este mes
+              Tipos disponibles
             </p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Estadísticas Detalladas de Materiales de Empaque */}
+      <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2 text-orange-800">
+            <Package className="h-5 w-5" />
+            📦 Materiales de Empaque - Cuenta 1405 (PUC 2025)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="p-4 bg-white rounded-lg border border-orange-200">
+              <h3 className="font-medium text-orange-900 mb-2">Valor Total Empaque</h3>
+              <p className="text-2xl font-bold text-orange-800">{formatCurrency(packagingValue)}</p>
+              <p className="text-sm text-orange-600">Inventario valorizado</p>
+            </div>
+            <div className="p-4 bg-white rounded-lg border border-orange-200">
+              <h3 className="font-medium text-orange-900 mb-2">Café Verde</h3>
+              <p className="text-2xl font-bold text-orange-800">{coffeeMaterials.length}</p>
+              <p className="text-sm text-orange-600">Tipos de café</p>
+            </div>
+            <div className="p-4 bg-white rounded-lg border border-orange-200">
+              <h3 className="font-medium text-orange-900 mb-2">Tratamiento Contable</h3>
+              <p className="text-sm font-medium text-orange-800">✅ Materias Primas</p>
+              <p className="text-xs text-orange-600">Cuenta 1405 - PUC 2025</p>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            <h4 className="font-medium text-orange-900">Materiales de Empaque Disponibles:</h4>
+            {packagingMaterials.map((material) => (
+              <div key={material.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-orange-200">
+                <div>
+                  <p className="font-medium text-orange-900">{material.name}</p>
+                  <p className="text-sm text-orange-700">{material.description}</p>
+                  <p className="text-xs text-orange-600">Stock: {material.currentStock} {material.unit}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-orange-800">{formatCurrency(material.totalValue)}</p>
+                  <p className="text-xs text-orange-600">Costo unitario: {formatCurrency(material.unitCost)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-sm text-blue-800">
+              <strong>💡 Tratamiento Contable Correcto:</strong> Los materiales de empaque (bolsas, etiquetas, cajas)
+              se clasifican como Inventario de Materias Primas (cuenta 1405) porque son insumos necesarios
+              para completar el producto final según PUC 2025.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Tabs de Información Contable */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

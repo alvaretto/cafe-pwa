@@ -407,11 +407,14 @@ export function PurchasesAccounting({ supplierId }: PurchasesAccountingProps) {
                     id="description"
                     value={newPurchase.description}
                     onChange={(e) => setNewPurchase(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Ej: Café verde Huila, Bolsas de empaque, Suministros oficina..."
+                    placeholder="Ej: Café verde Huila, Bolsas kraft 1 libra, Etiquetas adhesivas..."
                   />
-                  <p className="text-xs text-gray-600">
-                    💡 La descripción determina si se clasifica como materia prima (cuenta 1405) o mercancía (cuenta 1435)
-                  </p>
+                  <div className="text-xs text-gray-600 space-y-1">
+                    <p className="font-medium">💡 Clasificación automática según descripción:</p>
+                    <p><strong>Materias Primas (1405):</strong> Café verde, bolsas de empaque, etiquetas, cajas</p>
+                    <p><strong>Mercancías (1435):</strong> Productos para reventa</p>
+                    <p><strong>Gastos (51xx):</strong> Suministros administrativos, papelería</p>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="subtotal">Subtotal</Label>
