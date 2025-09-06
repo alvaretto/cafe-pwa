@@ -238,8 +238,17 @@ Puedes responder consultas sobre:
 export async function POST(request: NextRequest) {
   try {
     // Inicializar clientes de IA dentro de la función
-    // Usar la API key de Anthropic Claude (configuración por problemas de cache de Next.js)
-    const finalAnthropicKey = process.env.ANTHROPIC_API_KEY || 'CONFIGURE_YOUR_ANTHROPIC_API_KEY_HERE'
+    // Cargar configuración local si existe (solo en desarrollo)
+    try {
+      if (process.env.NODE_ENV === 'development') {
+        require('../../../local-config')
+      }
+    } catch (e) {
+      // Archivo de configuración local no existe, usar variables de entorno
+    }
+
+    // Usar la API key de Anthropic Claude desde variables de entorno
+    const finalAnthropicKey = process.env.ANTHROPIC_API_KEY
 
     const anthropic = finalAnthropicKey && finalAnthropicKey.includes('sk-ant-')
       ? new Anthropic({
@@ -319,9 +328,10 @@ INSTRUCCIONES:
           ]
         })
 
-        const responseText = claudeResponse.content[0].type === 'text'
-          ? claudeResponse.content[0].text
-          : 'Error procesando respuesta'
+        const firstContent = claudeResponse.content?.[0]
+        const responseText = firstContent && firstContent.type === 'text'
+          ? firstContent.text
+          : 'Error procesando respuesta de Claude'
 
         return NextResponse.json({ response: responseText })
       } catch (claudeError) {

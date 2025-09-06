@@ -39,7 +39,7 @@ export async function paginate<T>(
   }
 
   // Construir ordenamiento
-  let orderByConditions: any = {}
+  const orderByConditions: any = {}
   if (sortBy) {
     orderByConditions[sortBy] = sortOrder
   } else {

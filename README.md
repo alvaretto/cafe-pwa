@@ -2,11 +2,9 @@
 
 CRM integral especializado para emprendimientos de venta de café por libras, medias libras y gramos. Una aplicación web progresiva (PWA) moderna **completamente funcional** con capacidades offline y funcionalidades inteligentes impulsadas por **Anthropic Claude AI**.
 
-## 🚀 Estado Actual - Aplicación 100% Operativa y Estable
+## 🚀 Características Principales
 
-**✅ TODOS LOS MÓDULOS ESTÁN FUNCIONANDO CORRECTAMENTE**
-
-La aplicación CRM Tinto del Mirador está completamente implementada, estable y operativa con todos sus módulos principales funcionando sin errores. El sistema incluye **integración completa con Anthropic Claude AI** para asistencia inteligente, análisis contable PUC 2025 y consultas contextuales. Incluye datos mock para demostración y está lista para conectarse a servicios de producción.
+**Sistema CRM completo y operativo** con integración de inteligencia artificial para asistencia especializada en el negocio del café. Incluye análisis contable PUC 2025 Colombia y consultas contextuales basadas en datos reales del sistema.
 
 ## ✅ Módulos Completamente Operativos
 
@@ -301,9 +299,18 @@ Para habilitar el asistente inteligente con respuestas reales:
 
 ### 5. Ejecutar en modo desarrollo
 ```bash
-# Ejecutar en puerto fijo 3001 (configurado permanentemente)
+# El sistema está configurado para ejecutarse en puerto fijo 3001
 npm run dev
 ```
+
+**Acceso al sistema:**
+- **Aplicación principal**: http://localhost:3001
+- **Dashboard**: http://localhost:3001/dashboard
+- **Chat con IA**: http://localhost:3001/chat
+
+**Credenciales de demostración:**
+- **Administrador**: admin@tintodelmirador.com / admin123
+- **Vendedor**: vendedor@tintodelmirador.com / vendedor123
 
 La aplicación estará disponible en:
 - **Puerto 3001**: `http://localhost:3001` (puerto fijo y permanente)
@@ -436,25 +443,18 @@ npm run build
 npm start
 ```
 
-## 🚀 Roadmap de Desarrollo
+## 🚀 Próximos Desarrollos
 
-### 🔗 **Integración con Servicios Externos**
-- **Base de datos**: Migrar a PostgreSQL para datos persistentes
-- **Sistemas contables**: Integración con SIIGO, World Office, Alegra
-- **APIs de terceros**: Conectar servicios de facturación y pagos
-- **PWA**: Habilitar funcionalidad offline completa
+### **Integración con Servicios de Producción**
+- Migración a base de datos PostgreSQL
+- Integración con sistemas contables (SIIGO, World Office, Alegra)
+- Servicios de facturación y pagos
+- Funcionalidad PWA offline completa
 
-### 📈 **Optimizaciones de Rendimiento**
-- **Lazy loading** para componentes pesados
-- **Bundle splitting** optimizado
-- **Service Workers** para cacheo inteligente
-- **Compresión** gzip/brotli en producción
-
-### 🔐 **Mejoras de Seguridad y Monitoreo**
-- **Rate limiting** en endpoints críticos
-- **Monitoreo de errores** con Sentry
-- **Logs estructurados** para auditoría
-- **2FA** para usuarios administradores
+### **Optimizaciones**
+- Mejoras de rendimiento y carga
+- Monitoreo de errores y logs
+- Seguridad avanzada con 2FA
 
 ## 🤝 Contribución
 
@@ -478,8 +478,12 @@ Para soporte técnico o consultas:
 
 ---
 
-**✨ CRM Tinto del Mirador - Sistema Completo con IA**
+---
 
-La aplicación está completamente operativa con todos los módulos funcionando correctamente, incluyendo **integración completa con Anthropic Claude AI** para asistencia inteligente. El sistema ha sido optimizado y estabilizado para garantizar máxima confiabilidad. Listo para desarrollo adicional o despliegue en producción.
+## ✨ **CRM Tinto del Mirador - Sistema Completo**
+
+**Aplicación completamente funcional** con todos los módulos operativos e **integración avanzada con Anthropic Claude AI**. Sistema optimizado, estable y listo para uso en producción o desarrollo adicional.
+
+**Desarrollado con ❤️ para emprendimientos cafeteros en Colombia**
 
 
