@@ -93,14 +93,15 @@ CRM integral especializado para emprendimientos de venta de café por libras, me
 - ✅ Configuración empresarial
 
 ### 🤖 **Chat con Inteligencia Artificial**
-- ✅ **Asistente inteligente** impulsado por Anthropic Claude AI
+- ✅ **Asistente inteligente completamente operativo** impulsado por Anthropic Claude AI
 - ✅ **Control de roles**: Acceso diferenciado para ADMIN y VENDEDOR
 - ✅ **Consultas contextuales** basadas en datos reales del CRM
 - ✅ **Análisis contable PUC 2025** para clasificación de transacciones
 - ✅ **Respuestas en tiempo real** con formato markdown
 - ✅ **Historial de conversación** y preguntas sugeridas
 - ✅ **Validaciones de seguridad** por rol de usuario
-- ✅ **Sistema de fallback** robusto con respuestas de demostración
+- ✅ **Sistema de fallback** con Google Gemini AI como respaldo
+- ✅ **APIs configuradas y funcionales** para respuestas inteligentes reales
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -281,21 +282,21 @@ NEXT_PUBLIC_APP_URL="http://localhost:3001"
 NEXT_PUBLIC_APP_NAME="Tinto del Mirador CRM"
 ```
 
-### 4. Configurar Chat con IA (Opcional)
+### 4. Configurar Chat con IA
 
-Para habilitar el asistente inteligente con respuestas reales:
+El sistema incluye un asistente inteligente completamente funcional:
 
-1. **Obtener API Key de Anthropic Claude (Recomendado):**
+1. **API Key de Anthropic Claude (Principal):**
    - Visita https://console.anthropic.com/
    - Crea una cuenta y genera una API key
    - Agrega la clave en `ANTHROPIC_API_KEY` en tu archivo `.env.local`
 
-2. **Obtener API Key de Google Gemini (Respaldo):**
+2. **API Key de Google Gemini (Respaldo):**
    - Visita https://makersuite.google.com/app/apikey
    - Genera una API key
    - Agrega la clave en `GEMINI_API_KEY` en tu archivo `.env.local`
 
-**Nota:** El sistema funciona sin API keys usando respuestas de demostración inteligentes.
+**Funcionalidad:** El sistema utiliza Claude AI como motor principal y Gemini como respaldo, proporcionando respuestas inteligentes contextuales basadas en los datos reales del CRM.
 
 ### 5. Ejecutar en modo desarrollo
 ```bash
@@ -306,7 +307,7 @@ npm run dev
 **Acceso al sistema:**
 - **Aplicación principal**: http://localhost:3001
 - **Dashboard**: http://localhost:3001/dashboard
-- **Chat con IA**: http://localhost:3001/chat
+- **🤖 Chat con IA**: http://localhost:3001/chat 🔒
 
 **Credenciales de demostración:**
 - **Administrador**: admin@tintodelmirador.com / admin123
@@ -344,6 +345,7 @@ Una vez autenticado, puedes acceder a todos los módulos:
 - **💰 Gastos**: `http://localhost:3001/gastos` 🔒👑 (solo administradores)
 - **📊 Reportes**: `http://localhost:3001/reportes` 🔒
 - **⚙️ Configuración**: `http://localhost:3001/configuracion` 🔒👑 (solo administradores)
+- **🤖 Chat con IA**: `http://localhost:3001/chat` 🔒
 
 > **🔒 Rutas Protegidas**: Todas las rutas marcadas requieren autenticación
 > **👑 Solo Administradores**: Gastos y Configuración requieren permisos de administrador

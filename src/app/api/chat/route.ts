@@ -12,6 +12,8 @@ import {
   getExpensesStats,
   getSalesStats
 } from '@/lib/mock-data'
+import { ChatErrorType } from '@/types/chat-errors'
+import { generateErrorMessage, logChatError } from '@/lib/chat-error-handler'
 
 // Configuración de autenticación simplificada para la API
 const authOptions = {
@@ -238,19 +240,19 @@ Puedes responder consultas sobre:
 export async function POST(request: NextRequest) {
   try {
     // Inicializar clientes de IA dentro de la función
-    // Cargar configuración local si existe (solo en desarrollo)
-    try {
-      if (process.env.NODE_ENV === 'development') {
-        require('../../../local-config')
-      }
-    } catch (e) {
-      // Archivo de configuración local no existe, usar variables de entorno
-    }
-
     // Usar la API key de Anthropic Claude desde variables de entorno
     const finalAnthropicKey = process.env.ANTHROPIC_API_KEY
 
-    const anthropic = finalAnthropicKey && finalAnthropicKey.includes('sk-ant-')
+    // Validar configuración de APIs
+    const hasValidAnthropicKey = finalAnthropicKey && finalAnthropicKey.startsWith('sk-ant-')
+    const hasValidGeminiKey = process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'tu-gemini-api-key-aqui'
+
+    console.log('🤖 AI Configuration:', {
+      anthropic: hasValidAnthropicKey ? 'configured' : 'not configured',
+      gemini: hasValidGeminiKey ? 'configured' : 'not configured'
+    })
+
+    const anthropic = finalAnthropicKey && finalAnthropicKey.startsWith('sk-ant-')
       ? new Anthropic({
           apiKey: finalAnthropicKey,
         })
@@ -260,16 +262,50 @@ export async function POST(request: NextRequest) {
       ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
       : null
 
-    // Simplificar autenticación para demo - en producción usar getServerSession
-    const { message, userRole, conversationHistory } = await request.json()
 
-    if (!message || typeof message !== 'string') {
-      return NextResponse.json({ error: 'Mensaje requerido' }, { status: 400 })
+
+    // Parsear y validar el request
+    let requestData
+    try {
+      requestData = await request.json()
+    } catch (parseError) {
+      const error = generateErrorMessage(ChatErrorType.VALIDATION_ERROR, 'Invalid JSON in request body')
+      logChatError(error, { parseError })
+      return NextResponse.json({
+        error: error.message,
+        errorType: error.type,
+        userMessage: error.userMessage,
+        canRetry: error.canRetry,
+        suggestedAction: error.suggestedAction
+      }, { status: 400 })
+    }
+
+    const { message, userRole, conversationHistory } = requestData
+
+    // Validar mensaje
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+      const error = generateErrorMessage(ChatErrorType.VALIDATION_ERROR, 'Message is required and must be a non-empty string')
+      logChatError(error, { message })
+      return NextResponse.json({
+        error: error.message,
+        errorType: error.type,
+        userMessage: error.userMessage,
+        canRetry: error.canRetry,
+        suggestedAction: error.suggestedAction
+      }, { status: 400 })
     }
 
     // Validar rol
     if (!userRole || !['ADMIN', 'VENDEDOR'].includes(userRole)) {
-      return NextResponse.json({ error: 'Rol inválido' }, { status: 400 })
+      const error = generateErrorMessage(ChatErrorType.VALIDATION_ERROR, `Invalid user role: ${userRole}`)
+      logChatError(error, { userRole })
+      return NextResponse.json({
+        error: error.message,
+        errorType: error.type,
+        userMessage: error.userMessage,
+        canRetry: error.canRetry,
+        suggestedAction: error.suggestedAction
+      }, { status: 400 })
     }
 
     // Validaciones adicionales para vendedores
@@ -334,8 +370,9 @@ INSTRUCCIONES:
           : 'Error procesando respuesta de Claude'
 
         return NextResponse.json({ response: responseText })
-      } catch (claudeError) {
-        console.error('Error con Claude API, intentando Gemini:', claudeError)
+      } catch (claudeError: any) {
+        const error = generateErrorMessage(ChatErrorType.CLAUDE_API_ERROR, claudeError?.message || 'Unknown Claude error')
+        logChatError(error, { claudeError, userRole, message })
 
         // Si falla Claude, intentar con Gemini como respaldo
         if (genAI) {
@@ -369,25 +406,53 @@ Respuesta:`
             const response = result.response
             const text = response.text()
 
-            return NextResponse.json({ response: text + '\n\n*🔄 Respuesta generada con Gemini AI (respaldo)*' })
-          } catch (geminiError) {
-            console.error('Error con ambas APIs, usando respuesta de demostración:', geminiError)
+            return NextResponse.json({
+              response: text + '\n\n*🔄 Respuesta generada con Gemini AI (respaldo)*',
+              fallbackUsed: 'gemini'
+            })
+          } catch (geminiError: any) {
+            const geminiErr = generateErrorMessage(ChatErrorType.GEMINI_API_ERROR, geminiError?.message || 'Unknown Gemini error')
+            logChatError(geminiErr, { geminiError, claudeError, userRole, message })
+
+            // Si fallan ambas APIs, usar respuesta de demostración
+            const demoResponse = generateDemoResponse(message, userRole)
+            return NextResponse.json({
+              response: demoResponse + '\n\n*⚠️ Usando respuestas de demostración - APIs de IA no disponibles*',
+              fallbackUsed: 'demo',
+              errorType: ChatErrorType.API_NOT_CONFIGURED
+            })
           }
+        } else {
+          // Si no hay Gemini configurado, usar respuesta de demostración directamente
+          const demoResponse = generateDemoResponse(message, userRole)
+          return NextResponse.json({
+            response: demoResponse + '\n\n*⚠️ Usando respuestas de demostración - APIs de IA no disponibles*',
+            fallbackUsed: 'demo',
+            errorType: ChatErrorType.API_NOT_CONFIGURED
+          })
         }
       }
     }
 
-    // Si no hay APIs disponibles, devolver error
+    // Si no hay APIs disponibles, usar respuesta de demostración
+    const demoResponse = generateDemoResponse(message, userRole)
     return NextResponse.json({
-      response: '❌ **Error de configuración**\n\nNo se pudo conectar con los servicios de IA. Verifique la configuración de las API keys de Anthropic Claude o Google Gemini.',
-      error: 'API_NOT_CONFIGURED'
-    }, { status: 500 })
+      response: demoResponse + '\n\n*⚠️ Usando respuestas de demostración - APIs de IA no configuradas*',
+      fallbackUsed: 'demo',
+      errorType: ChatErrorType.API_NOT_CONFIGURED
+    })
 
-  } catch (error) {
-    console.error('Error en chat API:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' }, 
-      { status: 500 }
-    )
+  } catch (error: any) {
+    const serverError = generateErrorMessage(ChatErrorType.INTERNAL_SERVER_ERROR, error?.message || 'Unknown server error')
+    logChatError(serverError, { error, stack: error?.stack })
+
+    return NextResponse.json({
+      error: serverError.message,
+      errorType: serverError.type,
+      userMessage: serverError.userMessage,
+      canRetry: serverError.canRetry,
+      suggestedAction: serverError.suggestedAction,
+      technicalDetails: process.env.NODE_ENV === 'development' ? error?.message : undefined
+    }, { status: 500 })
   }
 }
