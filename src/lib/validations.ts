@@ -380,10 +380,13 @@ export function validateCustomer(customer: {
     }
 
     // Validación específica por mes
-    if (customer.birthMonth) {
+    if (customer.birthMonth && customer.birthDay) {
       const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-      if (customer.birthDay > daysInMonth[customer.birthMonth - 1]) {
-        errors.birthDay = `El mes ${customer.birthMonth} no tiene ${customer.birthDay} días`
+      const monthIndex = customer.birthMonth - 1
+      const birthDay = customer.birthDay
+      const maxDays = daysInMonth[monthIndex]
+      if (maxDays && birthDay > maxDays) {
+        errors.birthDay = `El mes ${customer.birthMonth} no tiene ${birthDay} días`
       }
     }
   }

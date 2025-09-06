@@ -78,7 +78,7 @@ export async function middleware(request: NextRequest) {
     // Verificar token de NextAuth
     const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET
+      secret: process.env.NEXTAUTH_SECRET || ''
     })
 
     if (!token) {
