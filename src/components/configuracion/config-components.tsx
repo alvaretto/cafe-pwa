@@ -455,17 +455,13 @@ export function UserSettings({ preferences, onPreferencesChange, isLoading }: Us
   // Función para manejar cambios de tema con sincronización mejorada y debounce
   const handleThemeChange = useCallback((newTheme: 'light' | 'dark' | 'auto') => {
     if (isThemeChanging) {
-      console.log('⏳ Theme change already in progress, ignoring request')
+      // Cambio de tema ya en progreso
       return
     }
 
     try {
       setIsThemeChanging(true)
-      console.log('🎨 Starting theme change to:', newTheme, {
-        currentTheme,
-        resolvedTheme,
-        previousPreference: preferences?.theme
-      })
+      // Iniciando cambio de tema
 
       // Aplicar el tema inmediatamente en next-themes para feedback visual instantáneo
       setTheme(newTheme)
@@ -475,17 +471,13 @@ export function UserSettings({ preferences, onPreferencesChange, isLoading }: Us
         try {
           // Actualizar las preferencias del usuario después del cambio visual
           onPreferencesChange({ theme: newTheme })
-          console.log('✅ Theme change completed successfully:', {
-            newTheme,
-            currentTheme,
-            resolvedTheme
-          })
+          // Cambio de tema completado exitosamente
         } catch (error) {
-          console.error('Error updating preferences after theme change:', error)
+          // Error al actualizar preferencias después del cambio de tema
           // Revertir el tema si falla la actualización de preferencias
           const fallbackTheme = preferences?.theme || 'light'
           setTheme(fallbackTheme)
-          console.warn('🔄 Reverted theme to:', fallbackTheme)
+          // Tema revertido por error
         } finally {
           setIsThemeChanging(false)
         }

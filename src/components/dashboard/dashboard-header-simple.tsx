@@ -26,7 +26,8 @@ import {
   Users,
   Package,
   DollarSign,
-  BarChart3
+  BarChart3,
+  MessageCircle
 } from 'lucide-react'
 import { signOut } from '@/lib/auth-simple'
 import { useRouter } from 'next/navigation'
@@ -175,6 +176,15 @@ export function DashboardHeaderSimple({ user, onRefresh, isLoading }: DashboardH
                   <span>Gastos</span>
                 </Button>
               )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push('/chat')}
+                className="flex items-center space-x-2"
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span>Chat IA</span>
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"

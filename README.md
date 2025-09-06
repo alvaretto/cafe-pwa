@@ -1,12 +1,12 @@
 # Tinto del Mirador CRM
 
-CRM integral especializado para emprendimientos de venta de café por libras, medias libras y gramos. Una aplicación web progresiva (PWA) moderna **completamente funcional** con capacidades offline y funcionalidades inteligentes impulsadas por IA.
+CRM integral especializado para emprendimientos de venta de café por libras, medias libras y gramos. Una aplicación web progresiva (PWA) moderna **completamente funcional** con capacidades offline y funcionalidades inteligentes impulsadas por **Anthropic Claude AI**.
 
 ## 🚀 Estado Actual - Aplicación 100% Operativa y Estable
 
 **✅ TODOS LOS MÓDULOS ESTÁN FUNCIONANDO CORRECTAMENTE**
 
-La aplicación CRM Tinto del Mirador está completamente implementada, estable y operativa con todos sus módulos principales funcionando sin errores. El sistema ha sido optimizado y limpiado, eliminando componentes experimentales para garantizar máxima estabilidad. Incluye datos mock para demostración y está lista para conectarse a servicios de producción.
+La aplicación CRM Tinto del Mirador está completamente implementada, estable y operativa con todos sus módulos principales funcionando sin errores. El sistema incluye **integración completa con Anthropic Claude AI** para asistencia inteligente, análisis contable PUC 2025 y consultas contextuales. Incluye datos mock para demostración y está lista para conectarse a servicios de producción.
 
 ## ✅ Módulos Completamente Operativos
 
@@ -94,6 +94,16 @@ La aplicación CRM Tinto del Mirador está completamente implementada, estable y
 - ✅ Gestión de roles y permisos
 - ✅ Configuración empresarial
 
+### 🤖 **Chat con Inteligencia Artificial**
+- ✅ **Asistente inteligente** impulsado por Anthropic Claude AI
+- ✅ **Control de roles**: Acceso diferenciado para ADMIN y VENDEDOR
+- ✅ **Consultas contextuales** basadas en datos reales del CRM
+- ✅ **Análisis contable PUC 2025** para clasificación de transacciones
+- ✅ **Respuestas en tiempo real** con formato markdown
+- ✅ **Historial de conversación** y preguntas sugeridas
+- ✅ **Validaciones de seguridad** por rol de usuario
+- ✅ **Sistema de fallback** robusto con respuestas de demostración
+
 ## 🛠️ Tecnologías Utilizadas
 
 ### Frontend
@@ -105,6 +115,11 @@ La aplicación CRM Tinto del Mirador está completamente implementada, estable y
 - **Framer Motion** - Animaciones fluidas
 - **React Hook Form** - Manejo eficiente de formularios
 - **Zustand** - Gestión de estado global
+
+### Inteligencia Artificial
+- **Anthropic Claude AI** - Asistente inteligente principal (claude-3-haiku-20240307)
+- **Google Gemini AI** - Sistema de respaldo (gemini-pro)
+- **React Markdown** - Renderizado de respuestas con formato
 
 ## 📊 Mejoras Contables Implementadas - PUC 2025
 
@@ -259,15 +274,32 @@ NEXT_PUBLIC_FIREBASE_API_KEY="tu-firebase-api-key"
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="tu-proyecto.firebaseapp.com"
 NEXT_PUBLIC_FIREBASE_PROJECT_ID="tu-proyecto-id"
 
-# Google Gemini AI (opcional)
-GEMINI_API_KEY="tu-gemini-api-key"
+# Inteligencia Artificial
+ANTHROPIC_API_KEY="tu-anthropic-api-key"  # Principal - Obtener en https://console.anthropic.com/
+GEMINI_API_KEY="tu-gemini-api-key"        # Respaldo - Obtener en https://makersuite.google.com/
 
 # App Configuration
 NEXT_PUBLIC_APP_URL="http://localhost:3001"
 NEXT_PUBLIC_APP_NAME="Tinto del Mirador CRM"
 ```
 
-### 4. Ejecutar en modo desarrollo
+### 4. Configurar Chat con IA (Opcional)
+
+Para habilitar el asistente inteligente con respuestas reales:
+
+1. **Obtener API Key de Anthropic Claude (Recomendado):**
+   - Visita https://console.anthropic.com/
+   - Crea una cuenta y genera una API key
+   - Agrega la clave en `ANTHROPIC_API_KEY` en tu archivo `.env.local`
+
+2. **Obtener API Key de Google Gemini (Respaldo):**
+   - Visita https://makersuite.google.com/app/apikey
+   - Genera una API key
+   - Agrega la clave en `GEMINI_API_KEY` en tu archivo `.env.local`
+
+**Nota:** El sistema funciona sin API keys usando respuestas de demostración inteligentes.
+
+### 5. Ejecutar en modo desarrollo
 ```bash
 # Ejecutar en puerto fijo 3001 (configurado permanentemente)
 npm run dev
@@ -404,37 +436,13 @@ npm run build
 npm start
 ```
 
-## 🎯 Próximos Pasos para Producción
-
-### 🔗 Conectar Servicios Reales
-1. **Base de datos**: Configurar PostgreSQL para datos persistentes
-2. **APIs**: Conectar endpoints para funcionalidad completa
-3. **Gemini AI**: Configurar para insights reales
-4. **PWA**: Habilitar para funcionalidad offline
-5. **Usuarios**: Migrar de credenciales demo a registro real
-
-### 📈 Optimizaciones Recomendadas
-1. **Rendimiento**: Optimizar carga de componentes
-2. **SEO**: Implementar meta tags dinámicos
-3. **Analytics**: Integrar Google Analytics
-4. **Monitoreo**: Configurar logging y error tracking
-5. **Testing**: Ampliar cobertura de tests
-
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
 ## 🚀 Roadmap de Desarrollo
 
 ### 🔗 **Integración con Servicios Externos**
 - **Base de datos**: Migrar a PostgreSQL para datos persistentes
 - **Sistemas contables**: Integración con SIIGO, World Office, Alegra
 - **APIs de terceros**: Conectar servicios de facturación y pagos
-- **Gemini AI**: Configurar para insights y recomendaciones reales
+- **PWA**: Habilitar funcionalidad offline completa
 
 ### 📈 **Optimizaciones de Rendimiento**
 - **Lazy loading** para componentes pesados
@@ -447,7 +455,16 @@ npm start
 - **Monitoreo de errores** con Sentry
 - **Logs estructurados** para auditoría
 - **2FA** para usuarios administradores
-- **Testing**: Ampliar cobertura de tests automatizados
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+
 
 ## 📄 Licencia
 
@@ -461,8 +478,8 @@ Para soporte técnico o consultas:
 
 ---
 
-**✨ CRM Tinto del Mirador - Sistema Estable y Funcional**
+**✨ CRM Tinto del Mirador - Sistema Completo con IA**
 
-La aplicación está completamente operativa con todos los módulos funcionando correctamente. El sistema ha sido optimizado y estabilizado, eliminando componentes experimentales para garantizar máxima confiabilidad. Listo para desarrollo adicional o despliegue en producción.
+La aplicación está completamente operativa con todos los módulos funcionando correctamente, incluyendo **integración completa con Anthropic Claude AI** para asistencia inteligente. El sistema ha sido optimizado y estabilizado para garantizar máxima confiabilidad. Listo para desarrollo adicional o despliegue en producción.
 
 

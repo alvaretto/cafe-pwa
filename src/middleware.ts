@@ -13,6 +13,7 @@ const protectedRoutes = [
   '/gastos',
   '/reportes',
   '/configuracion',
+  '/chat',
   '/api/sales',
   '/api/customers',
   '/api/products',
@@ -21,6 +22,7 @@ const protectedRoutes = [
   '/api/expenses',
   '/api/reports',
   '/api/config',
+  '/api/chat',
 ]
 
 // Rutas que solo pueden acceder administradores

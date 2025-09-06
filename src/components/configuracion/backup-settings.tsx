@@ -110,7 +110,7 @@ export function BackupSettings({ isLoading }: BackupSettingsProps) {
       
       setBackupHistory(prev => [newBackup, ...prev])
     } catch (error) {
-      console.error('Error creating backup:', error)
+      // Error al crear respaldo
     } finally {
       setIsCreatingBackup(false)
     }
@@ -127,7 +127,7 @@ export function BackupSettings({ isLoading }: BackupSettingsProps) {
       await new Promise(resolve => setTimeout(resolve, 5000))
       alert('Backup restaurado exitosamente. La aplicación se reiniciará.')
     } catch (error) {
-      console.error('Error restoring backup:', error)
+      // Error al restaurar respaldo
       alert('Error al restaurar el backup. Inténtalo de nuevo.')
     } finally {
       setIsRestoringBackup(false)
