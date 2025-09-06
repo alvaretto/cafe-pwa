@@ -238,12 +238,12 @@ Puedes responder consultas sobre:
 export async function POST(request: NextRequest) {
   try {
     // Inicializar clientes de IA dentro de la función
-    // Usar la API key de Anthropic Claude (principal)
-    const anthropicApiKey = process.env.ANTHROPIC_API_KEY
+    // Usar la API key de Anthropic Claude (configuración por problemas de cache de Next.js)
+    const finalAnthropicKey = process.env.ANTHROPIC_API_KEY || 'CONFIGURE_YOUR_ANTHROPIC_API_KEY_HERE'
 
-    const anthropic = anthropicApiKey && anthropicApiKey.includes('sk-ant-')
+    const anthropic = finalAnthropicKey && finalAnthropicKey.includes('sk-ant-')
       ? new Anthropic({
-          apiKey: anthropicApiKey,
+          apiKey: finalAnthropicKey,
         })
       : null
 
@@ -367,11 +367,11 @@ Respuesta:`
       }
     }
 
-    // Si no hay APIs disponibles o fallan ambas, usar respuesta de demostración
-    const demoResponse = generateDemoResponse(message, userRole) +
-      '\n\n*⚠️ Nota: Respuesta generada en modo demostración. Configure una API key válida de Anthropic Claude o Google Gemini para obtener respuestas reales basadas en IA.*'
-
-    return NextResponse.json({ response: demoResponse })
+    // Si no hay APIs disponibles, devolver error
+    return NextResponse.json({
+      response: '❌ **Error de configuración**\n\nNo se pudo conectar con los servicios de IA. Verifique la configuración de las API keys de Anthropic Claude o Google Gemini.',
+      error: 'API_NOT_CONFIGURED'
+    }, { status: 500 })
 
   } catch (error) {
     console.error('Error en chat API:', error)
